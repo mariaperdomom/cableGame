@@ -1,0 +1,16 @@
+.connector {
+  transition: all 0.3s ease-in-out;
+}
+
+.connector.origin {
+  border: 2px solid black;
+}
+
+.connector.destination {
+  border: 2px solid black;
+}
+
+
+body {
+  user-select: none;
+}
