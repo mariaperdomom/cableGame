@@ -4,7 +4,7 @@ import CableGame from './components/CableGame';
 const App: React.FC = () => {
   
   return (
-    <CableGame />
+      <CableGame />
   );
 };
 
