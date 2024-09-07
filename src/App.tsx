@@ -1,28 +1,56 @@
 import React, { useState } from 'react';
 import CableGame from './components/CableGame';
-import { Center, Container, Stack, Title } from '@mantine/core';
+import { Button, Center, Container, Group, Image, Stack, Text, TextInput, Title } from '@mantine/core';
+import { IconAuth2fa, IconInfoCircle } from '@tabler/icons-react';
 
 const App: React.FC = () => {
   const [ actions, setActions ] = useState('');
+  const [ code, setCode ] = useState('000000');
+  /* const [ submit, setSubmit ] = useState(false); */
   
   return (
     <Container h={'100vh'} >
       <Center h={'100%'} >
-        <Stack gap={'xl'} p={'xl'} justify="center" align="center">
+        <Stack gap={'xl'} p={'xl'} justify='center' align='center'>
           { actions === '' && 
-            <Title order={1} onClick={()=> setActions('register')}>Bienvenidos</Title>
+            <Stack onClick={()=> setActions('register')} style={{cursor: 'pointer'}} justify='center'>
+              <Title order={1} ta={'center'}>Bienvenidos</Title>
+              <Image src={'./assets/cableD.jpg'} h={50} />
+              <Text ta={'center'}>Has tu magia</Text>
+            </Stack>
           }
           { actions === 'register' && 
-            <Title order={1} onClick={()=> setActions('game')}>Registro</Title>
+            <Stack gap={'xl'}>
+              <Title order={1} style={{cursor: 'pointer'}}>Registro</Title>
+              <TextInput 
+                label='Código'
+                placeholder='M1E2A3'
+                leftSection={<IconAuth2fa />}
+                size='lg'
+                withAsterisk
+                value={code}
+                onChange={(event) => setCode(event.currentTarget.value)}
+                maxLength={6}
+              />
+              <Group gap={5} align='center' mt={-25}>
+                <IconInfoCircle color='gray'/>
+                <Text c={'gray'}>Código de 6 dígitos alphanúmericos</Text>
+              </Group>
+
+              <Group>
+                <Button size='lg' variant='subtle'>Cancelar</Button>
+                <Button size='lg' disabled={code === ''} /* loading={submit} */ onClick={()=> {setActions('game')}}>Siguiente</Button>
+              </Group>
+            </Stack>
           }
           { actions === 'game' &&
             <>
-              <Title order={1} onClick={()=> setActions('end')}>Juego</Title>
+              <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}}>Juego</Title>
               <CableGame />
             </>
           }
           { actions === 'end' &&
-            <Title order={1} onClick={()=> setActions('')}>Final</Title>
+            <Title order={1} onClick={()=> setActions('')} style={{cursor: 'pointer'}}>Final</Title>
           }
         </Stack>
       </Center>

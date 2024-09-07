@@ -25,11 +25,13 @@ const CableGame: React.FC = () => {
 
     setCables([...cables, { originId, destinationId }]);
   };
+
   useEffect(() => {
     setTimeout(() => {
       setShowColor(false);
     },3000)
   }, []);
+  
   // Función para barajar los conectores de destino
   function shuffle(array: ConnectorData[]) {
     return array.sort(() => Math.random() - 0.5);
