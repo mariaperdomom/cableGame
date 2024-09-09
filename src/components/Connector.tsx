@@ -7,11 +7,11 @@ interface ConnectorProps {
     id: number;
     color: string;
   };
-  onConnect: (originId: number, destinationId: number) => void;
+  onConnect: (originId: number, destinationId: number, x: number, y: number) => void;
   isConnected: boolean ;
   showColor?: boolean;
   type: 'origin' | 'destination';
-  cables: { originId: number; destinationId: number }[];
+  cables: { originId: number; destinationId: number, x: number, y: number }[];
 }
 
 const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables }) => {
@@ -37,25 +37,26 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
 
   const handleDrop = (e: React.DragEvent<HTMLCanvasElement>) => {
     const originId = Number(e.dataTransfer.getData('originId'));
-    /* const x: number = e.clientX;
-    const y: number = e.clientY; */
+    const x: number = e.clientX;
+    const y: number = e.clientY;
 
     if (type === 'destination' && !isConnected && originId) {
-      onConnect(originId, connector.id);
-      drawCable(originId, connector.id);
+      onConnect(originId, connector.id, x, y);
+      drawCable();
     }
   };
 
-  const drawCable = (origin: number, destination: number) => {
+  const drawCable = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    ctx.moveTo(cables[origin].originId, cables[destination].destinationId);
     for(let i=0; i< cables.length; i++) {
-      ctx.lineTo(cables[origin].originId, cables[destination].destinationId);
+      ctx.moveTo(cables[i].x, cables[i].y);
+      ctx.lineTo(cables[i].x, cables[i].y);
     }
     ctx.lineWidth = 20
     ctx.strokeStyle = connector.color;
     ctx.stroke();
+    ctx.closePath();
   }
 
   const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {

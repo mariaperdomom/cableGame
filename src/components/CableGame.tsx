@@ -19,12 +19,12 @@ const CableGame: React.FC = () => {
   const [showColor,setShowColor] = useState<boolean>(true);
   const [originConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
   const [destinationConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
-  const [cables, setCables] = useState<{ originId: number; destinationId: number }[]>([]);
+  const [cables, setCables] = useState<{ originId: number; destinationId: number, x: number, y: number }[]>([]);
 
   // Maneja la conexión de un conector de origen a destino
-  const handleConnect = (originId: number, destinationId: number) => {
+  const handleConnect = (originId: number, destinationId: number, x: number, y: number) => {
 
-    setCables([...cables, { originId, destinationId }]);
+    setCables([...cables, { originId, destinationId, x, y }]);
   };
 
   useEffect(() => {
