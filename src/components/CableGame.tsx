@@ -55,6 +55,7 @@ const CableGame: React.FC = () => {
             isConnected={isConnected(connector.id) !== undefined}
             type="origin"
             showColor={showColor}
+            cables={cables}
           />
         ))}
       </Stack>
@@ -69,6 +70,7 @@ const CableGame: React.FC = () => {
             isConnected={isConnected(connector.id) !== undefined}
             type="destination"
             showColor={showColor}
+            cables={cables}
           />
         ))}
       </Stack>

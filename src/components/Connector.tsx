@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './Connector.module.css';
-import { Box, Group, Image } from '@mantine/core';
+import { /* Box, */ Group, Image } from '@mantine/core';
 
 interface ConnectorProps {
   connector: {
@@ -8,55 +8,57 @@ interface ConnectorProps {
     color: string;
   };
   onConnect: (originId: number, destinationId: number) => void;
-  isConnected: boolean  ;
+  isConnected: boolean ;
   showColor?: boolean;
   type: 'origin' | 'destination';
+  cables: { originId: number; destinationId: number }[];
 }
 
-interface Point {
-  x: number;
-  y: number;
-}
+const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables }) => {
+  const [ canvas, setCanvas ] = useState<any>()
+  const [ ctx, setCtx ] = useState<any>();
+  
+  useEffect(() => {
+    var canvas : any = document.getElementById("myCanvas");
+    if(canvas && canvas.getContext) {
+      setCanvas(canvas);
+      setCtx(canvas.getContext("2d"));
+    } else {
+      console.log('estoy aqui')
+    }
+  }, [])
 
-const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor }) => {
-  var canvas : any = document.getElementById("mycanvas");
-  if(canvas && canvas.getContext) {
-    var ctx = canvas.getContext("2d");
-    if(ctx) return ctx;
-  }
-  let points : Point[] = [];
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragStart = (e: React.DragEvent<HTMLCanvasElement>) => {
     if (type === 'origin') {
       e.dataTransfer.setData('originId', connector.id.toString());
-      points = [];
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLCanvasElement>) => {
     const originId = Number(e.dataTransfer.getData('originId'));
-    const x: number = e.clientX;
-    const y: number = e.clientY;
+    /* const x: number = e.clientX;
+    const y: number = e.clientY; */
 
     if (type === 'destination' && !isConnected && originId) {
       onConnect(originId, connector.id);
-      points.push({x, y});
-      drawCable();
+      drawCable(originId, connector.id);
     }
   };
 
-  const drawCable = () => {
+  const drawCable = (origin: number, destination: number) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for(let i=1; i< points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y);
+    ctx.moveTo(cables[origin].originId, cables[destination].destinationId);
+    for(let i=0; i< cables.length; i++) {
+      ctx.lineTo(cables[origin].originId, cables[destination].destinationId);
     }
-    /* ctx.closePath(); */
+    ctx.lineWidth = 20
+    ctx.strokeStyle = connector.color;
     ctx.stroke();
   }
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
     if (type === 'destination' && !isConnected) {
       e.preventDefault();
     }
@@ -76,7 +78,10 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
             }}
           />
         }
-        <Box
+        <canvas 
+          id="myCanvas" 
+          width="0" 
+          height="0" 
           className={classes.connector}
           style={{
             width: '140px',
@@ -95,7 +100,27 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
           onDragStart={handleDragStart}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-        />
+        ></canvas>
+        {/* <Box
+          className={classes.connector}
+          style={{
+            width: '140px',
+            height: '20px',
+            backgroundColor: showColor ? connector.color  : ( !isConnected ? 'gray' : connector.color),
+            borderRadius: '3px',
+            margin: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '2px solid black',
+            cursor: isConnected ? 'not-allowed' : 'pointer',
+            zIndex: 1000
+          }}
+          draggable={type === 'origin' && !isConnected}
+          onDragStart={handleDragStart}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+        /> */}
         { type === 'origin' &&
           <Image 
             src={'../assets/cableD.jpg'} 
@@ -108,7 +133,6 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
           />
         }
       </Group>
-      <canvas id="myCanvas" width="0" height="0" /* style={{border: '1px solid #d3d3d3'}} */></canvas>
     </>
   );
 };
