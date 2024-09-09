@@ -1,0 +1,17 @@
+.connector {
+    transition: all 0.3s ease-in-out;
+    /* background-image: repeating-linear-gradient(35deg, transparent, transparent 5px, #87530f 5px, #87530f 15px); */
+}
+
+.connector.origin {
+    border: 2px solid black;
+}
+
+.connector.destination {
+    border: 2px solid black;
+}
+
+
+body {
+    user-select: none;
+}

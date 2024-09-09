@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Connector from './Connector';
+import { Group, Stack, Text } from '@mantine/core';
 
 interface ConnectorData {
   id: number;
@@ -31,7 +32,7 @@ const CableGame: React.FC = () => {
       setShowColor(false);
     },3000)
   }, []);
-  
+
   // Función para barajar los conectores de destino
   function shuffle(array: ConnectorData[]) {
     return array.sort(() => Math.random() - 0.5);
@@ -39,13 +40,13 @@ const CableGame: React.FC = () => {
 
   // Verifica si un conector ya está conectado
   const isConnected = (connectorId: number) => {
- return cables.find((cable) => cable.originId === connectorId && cable.destinationId === connectorId);
+    return cables.find((cable) => cable.originId === connectorId && cable.destinationId === connectorId);
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-around', padding: '50px' }}>
-      <div>
-        <h3>Orígenes</h3>
+    <Group justify='space-between' gap={'xl'}>
+      <Stack>
+        <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
         {originConnectors.map((connector) => (
           <Connector
             key={connector.id}
@@ -56,10 +57,10 @@ const CableGame: React.FC = () => {
             showColor={showColor}
           />
         ))}
-      </div>
+      </Stack>
      
-      <div>
-        <h3>Destinos</h3>
+      <Stack>
+        <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
         {destinationConnectors.map((connector) => (
           <Connector
             key={connector.id}
@@ -70,8 +71,8 @@ const CableGame: React.FC = () => {
             showColor={showColor}
           />
         ))}
-      </div>
-    </div>
+      </Stack>
+    </Group>
   );
 };
 

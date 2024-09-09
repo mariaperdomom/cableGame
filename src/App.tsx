@@ -12,7 +12,7 @@ const App: React.FC = () => {
     <Container h={'100vh'} >
       <Center h={'100%'} >
         <Stack gap={'xl'} p={'xl'} justify='center' align='center'>
-          { actions === '' && 
+          { actions === 's' && 
             <Stack onClick={()=> setActions('register')} style={{cursor: 'pointer'}} justify='center'>
               <Title order={1} ta={'center'}>Bienvenidos</Title>
               <Image src={'./assets/cableD.jpg'} h={50} />
@@ -21,7 +21,7 @@ const App: React.FC = () => {
           }
           { actions === 'register' && 
             <Stack gap={'xl'}>
-              <Title order={1} style={{cursor: 'pointer'}}>Registro</Title>
+              <Title order={1} style={{cursor: 'pointer'}} ta={'center'}>Registro</Title>
               <TextInput 
                 label='Código'
                 placeholder='M1E2A3'
@@ -43,14 +43,14 @@ const App: React.FC = () => {
               </Group>
             </Stack>
           }
-          { actions === 'game' &&
+          { actions === '' &&
             <>
-              <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}}>Juego</Title>
+              <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
               <CableGame />
             </>
           }
           { actions === 'end' &&
-            <Title order={1} onClick={()=> setActions('')} style={{cursor: 'pointer'}}>Final</Title>
+            <Title order={1} onClick={()=> setActions('')} style={{cursor: 'pointer'}} ta={'center'}>Final</Title>
           }
         </Stack>
       </Center>
