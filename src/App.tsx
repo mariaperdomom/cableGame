@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import CableGame from './components/CableGame';
 import { Button, Center, Container, Group, Image, Stack, Text, TextInput, Title } from '@mantine/core';
 import { IconAuth2fa, IconInfoCircle } from '@tabler/icons-react';
+import Canvas from './components/Canvas';
+import NewCableGame from './components/NewCableGame';
+import OtherCableGame from './components/OtherCableGame';
 
 const App: React.FC = () => {
   const [ actions, setActions ] = useState('');
@@ -47,6 +50,9 @@ const App: React.FC = () => {
             <>
               <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
               <CableGame />
+              {/* <Canvas /> */}
+              {/* <NewCableGame /> */}
+              {/* <OtherCableGame /> */}
             </>
           }
           { actions === 'end' &&

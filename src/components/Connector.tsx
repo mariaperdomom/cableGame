@@ -15,17 +15,14 @@ interface ConnectorProps {
 }
 
 const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables }) => {
-  const [ canvas, setCanvas ] = useState<any>()
-  const [ ctx, setCtx ] = useState<any>();
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   
   useEffect(() => {
-    var canvas : any = document.getElementById("myCanvas");
-    if(canvas && canvas.getContext) {
-      setCanvas(canvas);
-      setCtx(canvas.getContext("2d"));
-    } else {
-      console.log('estoy aqui')
-    }
+    const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    setCanvas(canvas);
+    setCtx(ctx);
   }, [])
 
 
@@ -47,16 +44,18 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
   };
 
   const drawCable = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    for(let i=0; i< cables.length; i++) {
-      ctx.moveTo(cables[i].x, cables[i].y);
-      ctx.lineTo(cables[i].x, cables[i].y);
+    if(ctx) {
+      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+      ctx.beginPath();
+      for(let i=0; i< cables.length; i++) {
+        ctx.moveTo(cables[i].x, cables[i].y);
+        ctx.lineTo(cables[i].x, cables[i].y);
+      }
+      ctx.lineWidth = 20
+      ctx.strokeStyle = connector.color;
+      ctx.stroke();
+      ctx.closePath();
     }
-    ctx.lineWidth = 20
-    ctx.strokeStyle = connector.color;
-    ctx.stroke();
-    ctx.closePath();
   }
 
   const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
@@ -102,26 +101,6 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
           onDrop={handleDrop}
           onDragOver={handleDragOver}
         ></canvas>
-        {/* <Box
-          className={classes.connector}
-          style={{
-            width: '140px',
-            height: '20px',
-            backgroundColor: showColor ? connector.color  : ( !isConnected ? 'gray' : connector.color),
-            borderRadius: '3px',
-            margin: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '2px solid black',
-            cursor: isConnected ? 'not-allowed' : 'pointer',
-            zIndex: 1000
-          }}
-          draggable={type === 'origin' && !isConnected}
-          onDragStart={handleDragStart}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-        /> */}
         { type === 'origin' &&
           <Image 
             src={'../assets/cableD.jpg'} 
