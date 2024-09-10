@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CableGame = () => {
+const OtherCableGame = () => {
   const initialConnectors = [
     { id: 1, color: 'red' },
     { id: 2, color: 'blue' },
@@ -83,4 +83,4 @@ const CableGame = () => {
   );
 };
 
-export default CableGame;
+export default OtherCableGame;

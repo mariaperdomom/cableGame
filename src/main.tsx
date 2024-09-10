@@ -8,8 +8,8 @@ import App from './App';
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-			<MantineProvider theme={theme} forceColorScheme='light' defaultColorScheme='light'>
-				<App />
-			</MantineProvider>
+		<MantineProvider theme={theme} forceColorScheme='light' defaultColorScheme='light'>
+			<App />
+		</MantineProvider>
 	</StrictMode>
 );

@@ -5,15 +5,17 @@ import { Group, Stack, Text } from '@mantine/core';
 interface ConnectorData {
   id: number;
   color: string;
+  x: number;
+  y: number;
 }
 
 const CableGame: React.FC = () => {
   // Inicializa los conectores de origen y destino
   const initialConnectors = [
-    { id: 1, color: 'red' },
-    { id: 2, color: 'blue' },
-    { id: 3, color: 'green' },
-    { id: 4, color: 'yellow' },
+    { id: 1, color: 'red', x: 0, y: 0},
+    { id: 2, color: 'blue', x: 0, y: 0 },
+    { id: 3, color: 'green', x: 0, y: 0 },
+    { id: 4, color: 'yellow', x: 0, y: 0 },
   ];
   
   const [showColor,setShowColor] = useState<boolean>(true);
