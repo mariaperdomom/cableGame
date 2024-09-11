@@ -21,12 +21,13 @@ const CableGame: React.FC = () => {
   const [showColor,setShowColor] = useState<boolean>(true);
   const [originConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
   const [destinationConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
-  const [cables, setCables] = useState<{ originId: number; destinationId: number, x: number, y: number }[]>([]);
+  const [cables, setCables] = useState<{ originId: number; destinationId: number, x: number, y: number, color: string }[]>([]);
 
   // Maneja la conexión de un conector de origen a destino
-  const handleConnect = (originId: number, destinationId: number, x: number, y: number) => {
-
-    setCables([...cables, { originId, destinationId, x, y }]);
+  const handleConnect = (originId: number, destinationId: number, x: number, y: number, color: string) => {
+    if(originId === destinationId) {
+      setCables([...cables, { originId, destinationId, x, y, color }]);
+    }
   };
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const CableGame: React.FC = () => {
   };
 
   return (
-    <Group justify='space-between' gap={'xl'}>
+    <Group justify='space-between' gap={'xl'} w={'35vw'}>
       <Stack>
         <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
         {originConnectors.map((connector) => (

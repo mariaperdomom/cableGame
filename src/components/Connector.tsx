@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import classes from './Connector.module.css';
-import { /* Box, */ Box, Group, Image } from '@mantine/core';
+import { Box, Group } from '@mantine/core';
 
 interface ConnectorProps {
   connector: {
     id: number;
     color: string;
   };
-  onConnect: (originId: number, destinationId: number, x: number, y: number) => void;
+  onConnect: (originId: number, destinationId: number, x: number, y: number, color: string) => void;
   isConnected: boolean ;
   showColor?: boolean;
   type: 'origin' | 'destination';
-  cables: { originId: number; destinationId: number, x: number, y: number }[];
+  cables: { originId: number; destinationId: number, x: number, y: number, color: string }[];
 }
 
-const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor/* , cables */ }) => {
+const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables }) => {
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
-  const [cableCoordinates, setCableCoordinates] = useState<{ x1: number, y1: number, x2: number, y2: number }>({ x1: 0, y1: 0, x2: 0, y2: 0 });
+  /* const [cableCoordinates, setCableCoordinates] = useState<{ x1: number, y1: number, x2: number, y2: number }>({ x1: 0, y1: 0, x2: 0, y2: 0 }); */
   
   useEffect(() => {
     const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
@@ -33,30 +33,36 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
     }
   };
 
+  useEffect(() => {
+    if(isConnected) {
+      drawCable();
+    }
+  }, [isConnected]);
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     const originId = Number(e.dataTransfer.getData('originId'));
-    console.log(e, 'hola')
     const x: number = e.clientX;
     const y: number = e.clientY;
 
     if (type === 'destination' && !isConnected && originId) {
-      onConnect(originId, connector.id, x, y);
-      setCableCoordinates({ x1: x, y1: y, x2: 100, y2: 100 });
-      drawCable();
+      onConnect(originId, connector.id, x, y, connector.color);
+      /* setCableCoordinates({ x1: x, y1: y, x2: x, y2: y }); */
     }
   };
 
   const drawCable = () => {
     if(ctx) {
-      console.log(cableCoordinates)
       ctx.clearRect(0, 0, canvas!.width, canvas!.height);
-      ctx.beginPath();
-      ctx.moveTo(cableCoordinates!.x1, cableCoordinates!.y1);
-      ctx.lineTo(cableCoordinates!.x2, cableCoordinates!.y2);
-      ctx.lineWidth = 20
-      ctx.strokeStyle = connector.color;
-      ctx.stroke();
-      /* ctx.closePath(); */
+      for(let i=0; i< cables.length; i++) {
+        console.log(`Cable ${i}: x = ${cables[i].x}, y = ${cables[i].y}`);
+        ctx.beginPath();
+        ctx.moveTo(cables[i].x, cables[i].y);
+        ctx.lineTo(100, 100);
+        ctx.lineWidth = 15;
+        ctx.strokeStyle = cables[i].color;
+        ctx.stroke();
+        /* ctx.closePath(); */
+      }
     }
   }
 
@@ -75,7 +81,7 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
         style={{position:'absolute'}}
       />
       <Group gap={0} align='center' justify='center'>
-        { type === 'destination' &&
+        {/* { type === 'destination' &&
           <Image 
             src={'../assets/cableD.jpg'} 
             h={'14px'} 
@@ -85,7 +91,7 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
               left: '30px'
             }}
           />
-        }
+        } */}
         <Box 
           className={classes.connector}
           style={{
@@ -107,7 +113,7 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
           onDragOver={handleDragOver}
         />
         
-        { type === 'origin' &&
+        {/* { type === 'origin' &&
           <Image 
             src={'../assets/cableD.jpg'} 
             h={'14px'} 
@@ -117,7 +123,7 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
               right: '30px'
             }}
           />
-        }
+        } */}
       </Group>
     </>
   );
