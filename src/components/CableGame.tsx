@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Connector from './Connector';
 import { Group, Stack, Text } from '@mantine/core';
+import NewCableGame from './NewCableGame';
 
 interface ConnectorData {
   id: number;
@@ -21,12 +22,16 @@ const CableGame: React.FC = () => {
   const [showColor,setShowColor] = useState<boolean>(true);
   const [originConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
   const [destinationConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
-  const [cables, setCables] = useState<{ originId: number; destinationId: number, x: number, y: number, color: string }[]>([]);
+  const [cables, setCables] = useState<{ originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[]>([]);
+  const [showLine, setShowLine] = useState<boolean>(false)
 
   // Maneja la conexión de un conector de origen a destino
-  const handleConnect = (originId: number, destinationId: number, x: number, y: number, color: string) => {
+  const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
     if(originId === destinationId) {
-      setCables([...cables, { originId, destinationId, x, y, color }]);
+      setCables([...cables, { originId, destinationId, x1, y1, x2, y2, color }]);
+      setShowLine(true);
+    } else {
+      setShowLine(false);
     }
   };
 
@@ -47,8 +52,9 @@ const CableGame: React.FC = () => {
   };
 
   return (
-    <Group justify='space-between' gap={'xl'} w={'35vw'}>
-      <Stack>
+    <>
+    <Group justify='space-between' gap={0} /* w={'35vw'} */>
+      <Stack mr={-20}>
         <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
         {originConnectors.map((connector) => (
           <Connector
@@ -62,8 +68,14 @@ const CableGame: React.FC = () => {
           />
         ))}
       </Stack>
-     
-      <Stack>
+      {/* <canvas 
+        id="myCanvas"
+        width='250'
+        height='250'
+        style={{backgroundColor: 'pink'}}
+      /> */}
+      <NewCableGame showLine={showLine} cables={cables}/>
+      <Stack ml={-20}>
         <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
         {destinationConnectors.map((connector) => (
           <Connector
@@ -78,6 +90,7 @@ const CableGame: React.FC = () => {
         ))}
       </Stack>
     </Group>
+    </>
   );
 };
 
