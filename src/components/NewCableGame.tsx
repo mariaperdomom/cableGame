@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 interface Props {
-  showLine: boolean;
   cables: { originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[];
 }
 
 const NewCableGame = (props: Props) => {
-  const { showLine, cables } = props;
+  const { cables } = props;
   const [connections, setConnections] = useState<{ x1: number, y1: number, x2: number, y2: number }[]>([]);
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
@@ -47,6 +46,8 @@ const NewCableGame = (props: Props) => {
         ctx.beginPath();
         ctx.moveTo(cable.x1, cable.y1);
         ctx.lineTo(cable.x2, cable.y2);
+        ctx.lineWidth = 15;
+        ctx.strokeStyle = cable.color;
         ctx.stroke();
       });
     }

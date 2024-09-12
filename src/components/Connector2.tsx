@@ -8,19 +8,19 @@ interface ConnectorProps {
     color: string;
   };
   onConnect: (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => void;
-  onPositions?: ( x: number, y: number) => void;
+  originPosition: { x: number, y: number};
   isConnected: boolean ;
   showColor?: boolean;
   type: 'origin' | 'destination';
   cables: { originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[];
 }
 
-const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables, onPositions }) => {
+const Connector2: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables, originPosition }) => {
   /* const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null); */
   const [originId, setOriginId] = useState<number>(connector.id);
-  const [originPosition, setOriginPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
-  const originPositionRef = useRef<{x: number, y: number}>({x: 0, y: 0});
+  /* const [originPosition, setOriginPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
+  const originPositionRef = useRef<{x: number, y: number}>({x: 0, y: 0}); */
   /* 
   const [destinationPosition, setDestinationPosition] = useState<{ x: Number, y: Number}>(); */
   
@@ -80,22 +80,24 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
     actions
   }, [originPosition]) */
 
-  const handleOrigin = (x: number, y: number) => {
+  /* const handleOrigin = (x: number, y: number) => {
     setOriginId(connector.id);
     /* if(x > 0 && y > 0)  */
-    setOriginPosition({...originPosition, x, y});
+    /* setOriginPosition({...originPosition, x, y});
     if(onPositions) onPositions(x, y)
     console.log(originPosition, 'asd');
     
-  }
-
-  /* const handleDestination = (x: number, y: number) => {
-    const destination = connector.id;
-    setOriginPosition({...originPosition, x, y});
-    console.log(originId, destination, originPosition.x, originPosition.y, x, y, connector.color);
-    
-    onConnect(originId, destination, originPosition.x, originPosition.y, x, y, connector.color);
   } */
+
+  const handleDestination = (x: number, y: number) => {
+    const destination = connector.id;
+    
+    if(originPosition){
+        console.log(originId, destination, originPosition!.x, originPosition!.y, x, y, connector.color);
+        
+        onConnect(originId, destination, originPosition!.x, originPosition!.y, x, y, connector.color);
+    }
+  }
 
   return (
     <>
@@ -128,19 +130,19 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
           }}
           onClick={(e: React.MouseEvent<HTMLDivElement>) => 
             {
-              /* if(type === 'origin') { */
+              /* if(type === 'origin') {
                 handleOrigin(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-                console.log('in', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                console.log('in', e.nativeEvent.offsetX, e.nativeEvent.offsetY); */
                 
                 /* originPositionRef.current = ({x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY});
                 setOriginPosition({x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY});
                 console.log(originPositionRef.current.x, originPositionRef.current.y); */
-              /* } */ 
-              /* if(type === 'destination') {
+              /* }  */
+              /* if(type === 'destination') { */
                 handleDestination(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 console.log('out', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 
-              } */
+              /* } */
               /* if (type === 'destination' && !isConnected && originId) {
                   const x = e.nativeEvent.offsetX;
                   const y = e.nativeEvent.offsetY;
@@ -174,4 +176,4 @@ const Connector: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected
   );
 };
 
-export default Connector;
+export default Connector2;
