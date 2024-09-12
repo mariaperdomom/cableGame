@@ -25,6 +25,9 @@ const CableGame: React.FC = () => {
   const [destinationConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
   const [cables, setCables] = useState<{ originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[]>([]);
   const [originPosition, setOriginPosition] = useState<{ x: number, y: number}>({x: 0, y: 0});
+  const [connectorOriginId, setConnectorOriginId] = useState<number>(0);
+  const [connectorDestineId, setConnectorDestineId] = useState<number>(0);
+  const [connectorColor, setConnectorColor] = useState<string>('');
 
   // Maneja la conexión de un conector de origen a destino
   const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
@@ -62,16 +65,19 @@ const CableGame: React.FC = () => {
       <Stack mr={-20}>
         <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
         {originConnectors.map((connector) => (
-          <Connector
-            key={connector.id}
-            connector={connector}
-            onConnect={handleConnect}
-            isConnected={isConnected(connector.id) !== undefined}
-            type="origin"
-            showColor={showColor}
-            cables={cables}
-            onPositions={handlePosition}
-          />
+          <div key={connector.id}>
+            <Connector
+              connector={connector}
+              onConnect={handleConnect}
+              isConnected={isConnected(connector.id) !== undefined}
+              type="origin"
+              showColor={showColor}
+              cables={cables}
+              onPositions={handlePosition}
+              onOriginId={setConnectorOriginId}
+              onColor={setConnectorColor}
+            />
+          </div>
         ))}
       </Stack>
       {/* <canvas 
@@ -80,20 +86,26 @@ const CableGame: React.FC = () => {
         height='250'
         style={{backgroundColor: 'pink'}}
       /> */}
-      <NewCableGame cables={cables}/>
+      <NewCableGame 
+        cables={cables} 
+        onPositions={handlePosition} originId={connectorOriginId} destineId={connectorDestineId} onConnect={handleConnect}
+        color={connectorColor}
+      />
       <Stack ml={-20}>
         <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
         {destinationConnectors.map((connector) => (
-          <Connector2
-            key={connector.id}
-            connector={connector}
-            onConnect={handleConnect}
-            isConnected={isConnected(connector.id) !== undefined}
-            type="destination"
-            showColor={showColor}
-            cables={cables}
-            originPosition={originPosition}
-          />
+          <div key={connector.id}>
+            <Connector2
+              connector={connector}
+              onConnect={handleConnect}
+              isConnected={isConnected(connector.id) !== undefined}
+              type="destination"
+              showColor={showColor}
+              cables={cables}
+              originPosition={originPosition}
+              onDestineId={setConnectorDestineId}
+            />
+          </div>
         ))}
       </Stack>
     </Group>

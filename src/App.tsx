@@ -5,6 +5,7 @@ import { IconAuth2fa, IconInfoCircle } from '@tabler/icons-react';
 import XCableGame from './components/xCableGame';
 import GeneralGame from './components/GeneralGame';
 import Canvas from './components/Canvas';
+import Game from './components/Game';
 /* import Canvas from './components/Canvas';
 import NewCableGame from './components/NewCableGame';
 import OtherCableGame from './components/OtherCableGame'; */
@@ -52,12 +53,13 @@ const App: React.FC = () => {
           { actions === '' &&
             <>
               <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
-              <CableGame />
+              {/* <CableGame /> */}
               {/* <Canvas /> */}
               {/* <NewCableGame /> */}
               {/* <OtherCableGame /> */}
              {/*  <XCableGame /> */}
              {/* <GeneralGame /> */}
+             <Game />
             </>
           }
           { actions === 'end' &&

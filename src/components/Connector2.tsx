@@ -13,12 +13,14 @@ interface ConnectorProps {
   showColor?: boolean;
   type: 'origin' | 'destination';
   cables: { originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[];
+  onDestineId: (id: number) => void;
 }
 
-const Connector2: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables, originPosition }) => {
+const Connector2: React.FC<ConnectorProps> = ({ connector, onConnect, isConnected, type, showColor, cables, originPosition, onDestineId }) => {
   /* const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null); */
   const [originId, setOriginId] = useState<number>(connector.id);
+  onDestineId(connector.id)
   /* const [originPosition, setOriginPosition] = useState<{x: number, y: number}>({x: 0, y: 0});
   const originPositionRef = useRef<{x: number, y: number}>({x: 0, y: 0}); */
   /* 
@@ -128,8 +130,8 @@ const Connector2: React.FC<ConnectorProps> = ({ connector, onConnect, isConnecte
             cursor: isConnected ? 'not-allowed' : 'pointer',
             zIndex: 1000
           }}
-          onClick={(e: React.MouseEvent<HTMLDivElement>) => 
-            {
+          /* onClick={(e: React.MouseEvent<HTMLDivElement>) => 
+            { 
               /* if(type === 'origin') {
                 handleOrigin(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 console.log('in', e.nativeEvent.offsetX, e.nativeEvent.offsetY); */
@@ -139,8 +141,8 @@ const Connector2: React.FC<ConnectorProps> = ({ connector, onConnect, isConnecte
                 console.log(originPositionRef.current.x, originPositionRef.current.y); */
               /* }  */
               /* if(type === 'destination') { */
-                handleDestination(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-                console.log('out', e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                /* handleDestination(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                console.log('out', e.nativeEvent.offsetX, e.nativeEvent.offsetY); */
                 
               /* } */
               /* if (type === 'destination' && !isConnected && originId) {
@@ -153,7 +155,7 @@ const Connector2: React.FC<ConnectorProps> = ({ connector, onConnect, isConnecte
                   
                   onConnect(originId, destination, originPositionRef.current.x, originPositionRef.current.y, x, y, connector.color);
               } */
-            }}
+            /* }} */
           /* draggable={type === 'origin' && !isConnected}
           onDragStart={(e)=> {handleDragStart(e);}}
           onDrop={handleDrop}
