@@ -6,15 +6,15 @@ import XCableGame from './components/xCableGame';
 import GeneralGame from './components/GeneralGame';
 import Canvas from './components/Canvas';
 import Game from './components/Game';
+import Register from './components/Register';
 /* import Canvas from './components/Canvas';
 import NewCableGame from './components/NewCableGame';
 import OtherCableGame from './components/OtherCableGame'; */
 
 const App: React.FC = () => {
-  const [ actions, setActions ] = useState('');
-  const [ code, setCode ] = useState('000000');
-  /* const [ submit, setSubmit ] = useState(false); */
-  
+  const [ actions, setActions ] = useState<string>('');
+  const [ userCode, setUserCode ] = useState<string>('');
+    
   return (
     <Container h={'100vh'} fluid>
       <Center h={'100%'} >
@@ -27,39 +27,10 @@ const App: React.FC = () => {
             </Stack>
           }
           { actions === 'register' && 
-            <Stack gap={'xl'}>
-              <Title order={1} style={{cursor: 'pointer'}} ta={'center'}>Registro</Title>
-              <TextInput 
-                label='Código'
-                placeholder='M1E2A3'
-                leftSection={<IconAuth2fa />}
-                size='lg'
-                withAsterisk
-                value={code}
-                onChange={(event) => setCode(event.currentTarget.value)}
-                maxLength={6}
-              />
-              <Group gap={5} align='center' mt={-25}>
-                <IconInfoCircle color='gray'/>
-                <Text c={'gray'}>Código de 6 dígitos alphanúmericos</Text>
-              </Group>
-
-              <Group>
-                <Button size='lg' variant='subtle'>Cancelar</Button>
-                <Button size='lg' disabled={code === ''} /* loading={submit} */ onClick={()=> {setActions('game')}}>Siguiente</Button>
-              </Group>
-            </Stack>
+            <Register setActions={setActions} setUserCode={setUserCode}/>
           }
           { actions === 'game' &&
-            <>
-              {/* <CableGame /> */}
-              {/* <Canvas /> */}
-              {/* <NewCableGame /> */}
-              {/* <OtherCableGame /> */}
-             {/*  <XCableGame /> */}
-             {/* <GeneralGame /> */}
-             <Game setActions={setActions}/>
-            </>
+             <Game setActions={setActions} userCode={userCode}/>
           }
           { actions === 'end' &&
             <Title order={1} onClick={()=> setActions('')} style={{cursor: 'pointer'}} ta={'center'}>Final</Title>

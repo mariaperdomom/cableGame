@@ -19,7 +19,7 @@ export const FirebaseDB = getFirestore(FirebaseApp);
 //*----------------------------------- Entidad del servicio -----------------------------------------
 
 export class CheckInServiceTs {
-	eventId: string = '65747321300474a2240776e6'; //Todo: Aquí coloca el id del evento
+	eventId: string = '66e4928e446844dcb6079aa2'; //Todo: Aquí coloca el id del evento
 	experienceId: string = 'i0own9qlUQ'; //toDo: Aquí coloca el id de la experiencia asignada
 	participationCollection: CollectionReference<DocumentData, DocumentData>;
 	attendeesCollection: CollectionReference<DocumentData, DocumentData>;

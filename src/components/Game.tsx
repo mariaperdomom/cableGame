@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import classes from './Connector.module.css';
 import { useCountDown } from './useCountDown';
 import { useDisclosure } from '@mantine/hooks';
+import { checkInServiceTs } from './firebaseService';
 
 interface ConnectorData {
     id: number;
@@ -11,10 +12,11 @@ interface ConnectorData {
 
 interface Props {
     setActions: (action: string) => void; 
+    userCode: string;
 }
 
 const Game = (props: Props) => {
-    const { setActions } = props;
+    const { setActions, userCode } = props;
     const initialConnectors = [
         { id: 1, color: 'red'},
         { id: 2, color: 'blue'},
@@ -74,11 +76,27 @@ const Game = (props: Props) => {
 
     //Si no hizo nada y solo se quedo viendo llama a la funcion para abrir el modal
     useEffect(() => {
-        console.log(countDownGame.seconds)
         if(countDownGame.seconds === 0){
             setGameOver(true);
         }
     },[countDownGame.seconds])
+
+    useEffect(() => {
+        if(gameOver){
+            const save = async () => {
+                try {
+                    const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode, points: points + 10})
+                    console.log(saveUserParticipation);
+                    if(saveUserParticipation) {
+                        setActions('game')
+                    }
+                } catch (err) {
+                    console.log('error  al guardar');
+                }
+            }
+            save();
+        } 
+    }, [gameOver])
 
     // Maneja la conexión de un conector de origen a destino
     const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
@@ -87,7 +105,6 @@ const Game = (props: Props) => {
             if(originId === destinationId) {
                 setCables([...cables, { originId, destinationId, x1, y1, x2, y2, color }]);
                 setPoints(points + 10);
-                console.log(cables.length);
                 
                 if(cables.length === 3) {
                     setGameOver(true);
@@ -96,8 +113,6 @@ const Game = (props: Props) => {
                 setErrorAttempts(errorAttempts + 1);
             }
         } else {
-            console.log('llego antes de tiempo');
-            
             setGameOver(true);
         }
     };
@@ -269,7 +284,7 @@ const Game = (props: Props) => {
                     Finalizo el juego
 
                     <Group justify='center'>
-                        <Button onClick={() => {close(); setActions('end')}}>Guardar</Button>
+                        <Button onClick={() => {close(); setActions('end')}}>Confirmar</Button>
                     </Group>
                 </Modal>
             }
