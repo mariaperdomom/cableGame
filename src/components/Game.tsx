@@ -1,13 +1,19 @@
-import { Box, Group, Stack, Text } from '@mantine/core';
+import { Avatar, Box, Group, Paper, Stack, Text, Title } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react'
 import classes from './Connector.module.css';
+import { useCountDown } from './useCountDown';
 
 interface ConnectorData {
     id: number;
     color: string;
 }
 
-const Game = () => {
+interface Props {
+    setActions: (action: string) => void; 
+}
+
+const Game = (props: Props) => {
+    const { setActions } = props;
     const initialConnectors = [
         { id: 1, color: 'red'},
         { id: 2, color: 'blue'},
@@ -23,8 +29,17 @@ const Game = () => {
     const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
     const positionRef = useRef<{x1: number, y1: number, x2: number, y2: number}>();
     const [initialPosition, setInitialPosition] = useState<{ x: number; y: number } | null>(null);
-    const [isInitialPositionSet, setIsInitialPositionSet] = useState(false);
+    const [isInitialPositionSet, setIsInitialPositionSet] = useState<boolean>(false);
+    const [points, setPoints] = useState<number>(0);
+    const [attempts, setAttempts] = useState<number>(0);
+    const [errorAttempts, setErrorAttempts] = useState<number>(0);
+    const [gameOver, setGameOver] = useState<boolean>(false);
+    const waitTime : number = 3000;
+    const [activeCountDown, setActiveCountDown] = useState<boolean>(false);
+    const countDownOrigin = useCountDown(3, 'origin');
+    const countDownGame = useCountDown(12, 'game');
 
+    //Declaración del canvas para mostrar las líneas de conección
     useEffect(() => {
         const canvas = document.getElementById('canvasGame') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
@@ -32,18 +47,53 @@ const Game = () => {
         setCtx(ctx);
     }, []);
     
+    //Se declara los 3 segundos en los que el usuario puede ver los colores verdaderos antes de ocultarlos
     useEffect(() => {
         setTimeout(() => {
             setShowColor(false);
-        },3000)
+            setActiveCountDown(true);
+        },waitTime)
     }, []);
+
+    //Muestra las lineas trazadas de los cables ya conectados
+    useEffect(() => {
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+            cables.forEach((cable) => {
+                ctx.beginPath();
+                ctx.moveTo(cable.x1, cable.y1);
+                ctx.lineTo(cable.x2, cable.y2);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = cable.color;
+                ctx.stroke();
+            });
+        }
+    }, [cables, ctx]);
+
+    /* const countDown = (time: number) => {
+        const {seconds} = useCountDown(time);
+        return seconds;
+    } */
 
     // Maneja la conexión de un conector de origen a destino
     const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
-        setCables([...cables, { originId, destinationId, x1, y1, x2, y2, color }]);
-        if(originId !== destinationId) {
-            setCables(cables.filter((cable, index) => index === cables.length - 1))
+        setAttempts(attempts + 1);
+        if(errorAttempts < 5){
+            if(originId === destinationId) {
+                setCables([...cables, { originId, destinationId, x1, y1, x2, y2, color }]);
+                setPoints(points + 10);
+                if(cables.length === 4) {
+                    setGameOver(true);
+                }
+            } else {
+                setErrorAttempts(errorAttempts + 1);
+            }
+        } else {
+            setGameOver(true);
         }
+        /* if(originId !== destinationId) {
+            setCables(cables.filter((cable, index) => index === cables.length - 1))
+        } */
     };
 
     // Función para barajar los conectores de destino
@@ -56,6 +106,7 @@ const Game = () => {
         return cables.find((cable) => cable.originId === connectorId && cable.destinationId === connectorId);
     };
 
+    //Muestra una linea de conección en el canvas mientras se mueve el mouse
     const handleMouseMove = (e: React.MouseEvent<Element, MouseEvent>) => {
         if (canvas && ctx && initialPosition && isInitialPositionSet) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -71,6 +122,7 @@ const Game = () => {
         }
     };
       
+    //Maneja el control de la posición de los elementos seleccionados para poder obtener las coordenadas
     const handleCanvasClick = (e: React.MouseEvent<Element, MouseEvent>) => {
         if (canvas && ctx) {
             setIsInitialPositionSet(!isInitialPositionSet);
@@ -81,6 +133,7 @@ const Game = () => {
         }
     };
 
+    //Obtención de la data de origin
     const origin = (e: React.MouseEvent<HTMLDivElement>, originId: number) => {
         const x = e.nativeEvent.clientX;
         const y = e.nativeEvent.clientY;
@@ -94,7 +147,8 @@ const Game = () => {
         }
     }
 
-    const destination = (e: React.MouseEvent<HTMLDivElement>, destineId: number, color: string) => {
+    //Obtención de la data de destino
+    const destination = (e: React.MouseEvent<HTMLDivElement>, destinationId: number, color: string) => {
         const x = e.nativeEvent.clientX;
         const y = e.nativeEvent.clientY;
         if(canvas && ctx) {
@@ -105,84 +159,92 @@ const Game = () => {
             if (lastPosition) {
                 positionRef.current = { ...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: canvasX, y2: canvasY };
                 handleCanvasClick(e);
-                handleConnect(originId, destineId, lastPosition.x1, lastPosition.y1, canvasX, canvasY, color);
+                handleConnect(originId, destinationId, lastPosition.x1, lastPosition.y1, canvasX, canvasY, color);
             }
         }
     }
-    
-    useEffect(() => {
-        if (ctx) {
-            ctx.clearRect(0, 0, canvas!.width, canvas!.height);
-            cables.forEach((cable) => {
-            ctx.beginPath();
-            ctx.moveTo(cable.x1, cable.y1);
-            ctx.lineTo(cable.x2, cable.y2);
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = cable.color;
-            ctx.stroke();
-            });
-        }
-    }, [cables, ctx]);
 
     return (
-        <Group justify='space-between' gap={0} /* w={'35vw'} */>
-            <Stack mr={-10}>
-                <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
-                {originConnectors.map((connector) => (
+        <Stack>
+            <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
+            <Group justify='center' align='center' gap={'xl'}>
+                <Paper radius={'md'}>
+                    Tiempo: {activeCountDown ? countDownGame.seconds : '10' }
+                </Paper>
+                <Paper radius={'md'}>
+                    Puntos: {points}
+                </Paper>
+            </Group>
+            {showColor &&
+                <Group justify='center'>
+                    <Avatar 
+                        radius="xl" 
+                        size="lg" 
+                        src={null} 
+                        className={classes.pulse}
+                        style={{position: 'absolute', top: '55vh'}}
+                    >{countDownOrigin.seconds}</Avatar>
+                </Group>
+            }
+            <Group justify='space-between' gap={0} /* w={'35vw'} */>
+                <Stack mr={-10}>
+                    <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
+                    {originConnectors.map((connector) => (
+                        <div key={connector.id}>
+                            <Box
+                                className={classes.connector}
+                                style={{
+                                    width: '140px',
+                                    height: '20px',
+                                    backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? 'black' : connector.color),
+                                    borderRadius: '3px',
+                                    margin: '10px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    border: '1px solid black',
+                                    cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
+                                    /* zIndex: 1000 */
+                                }}
+                                onClick={(e) => origin(e, connector.id)}
+                            />
+                        </div>
+                    ))}
+                </Stack>
+                <canvas 
+                    id="canvasGame"
+                    width='250'
+                    height='250'
+                    style={{/* backgroundColor: 'pink', */ zIndex: 10}}
+                    onClick={handleCanvasClick}
+                    onMouseMove={handleMouseMove}
+                />
+                <Stack ml={-10}>
+                    <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
+                    {destinationConnectors.map((connector) => (
                     <div key={connector.id}>
-                        <Box
+                        <Box 
                             className={classes.connector}
                             style={{
                                 width: '140px',
                                 height: '20px',
-                                backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? 'black' : connector.color),
+                                backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'black' : connector.color),
                                 borderRadius: '3px',
                                 margin: '10px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 border: '1px solid black',
-                                cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
+                                cursor: (isConnected(connector.id) || !isInitialPositionSet) ? 'not-allowed' : 'pointer',
                                 /* zIndex: 1000 */
                             }}
-                            onClick={(e) => origin(e, connector.id)}
+                            onClick={(e) => destination(e, connector.id, connector.color)}
                         />
                     </div>
-                ))}
-            </Stack>
-            <canvas 
-                id="canvasGame"
-                width='250'
-                height='250'
-                style={{/* backgroundColor: 'pink', */ zIndex: 10}}
-                onClick={handleCanvasClick}
-                onMouseMove={handleMouseMove}
-            />
-            <Stack ml={-10}>
-                <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
-                {destinationConnectors.map((connector) => (
-                <div key={connector.id}>
-                    <Box 
-                        className={classes.connector}
-                        style={{
-                            width: '140px',
-                            height: '20px',
-                            backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'black' : connector.color),
-                            borderRadius: '3px',
-                            margin: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            border: '1px solid black',
-                            cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
-                            /* zIndex: 1000 */
-                        }}
-                        onClick={(e) => destination(e, connector.id, connector.color)}
-                    />
-                </div>
-                ))}
-            </Stack>
-        </Group>
+                    ))}
+                </Stack>
+            </Group>
+        </Stack>
     )
 }
 

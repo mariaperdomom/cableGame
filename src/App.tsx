@@ -16,7 +16,7 @@ const App: React.FC = () => {
   /* const [ submit, setSubmit ] = useState(false); */
   
   return (
-    <Container h={'100vh'} >
+    <Container h={'100vh'} fluid>
       <Center h={'100%'} >
         <Stack gap={'xl'} p={'xl'} justify='center' align='center'>
           { actions === 's' && 
@@ -52,14 +52,13 @@ const App: React.FC = () => {
           }
           { actions === '' &&
             <>
-              <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
               {/* <CableGame /> */}
               {/* <Canvas /> */}
               {/* <NewCableGame /> */}
               {/* <OtherCableGame /> */}
              {/*  <XCableGame /> */}
              {/* <GeneralGame /> */}
-             <Game />
+             <Game setActions={setActions}/>
             </>
           }
           { actions === 'end' &&
