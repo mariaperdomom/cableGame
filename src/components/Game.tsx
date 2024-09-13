@@ -1,7 +1,8 @@
-import { Avatar, Box, Group, Paper, Stack, Text, Title } from '@mantine/core';
+import { Avatar, Box, Button, Group, Modal, Paper, Stack, Text, Title } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react'
 import classes from './Connector.module.css';
 import { useCountDown } from './useCountDown';
+import { useDisclosure } from '@mantine/hooks';
 
 interface ConnectorData {
     id: number;
@@ -38,6 +39,7 @@ const Game = (props: Props) => {
     const [activeCountDown, setActiveCountDown] = useState<boolean>(false);
     const countDownOrigin = useCountDown(3, 'origin');
     const countDownGame = useCountDown(12, 'game');
+    const [opened, { close }] = useDisclosure(false);
 
     //Declaración del canvas para mostrar las líneas de conección
     useEffect(() => {
@@ -50,7 +52,7 @@ const Game = (props: Props) => {
     //Se declara los 3 segundos en los que el usuario puede ver los colores verdaderos antes de ocultarlos
     useEffect(() => {
         setTimeout(() => {
-            setShowColor(false);
+            /* setShowColor(false); */
             setActiveCountDown(true);
         },waitTime)
     }, []);
@@ -70,30 +72,34 @@ const Game = (props: Props) => {
         }
     }, [cables, ctx]);
 
-    /* const countDown = (time: number) => {
-        const {seconds} = useCountDown(time);
-        return seconds;
-    } */
+    //Si no hizo nada y solo se quedo viendo llama a la funcion para abrir el modal
+    useEffect(() => {
+        console.log(countDownGame.seconds)
+        if(countDownGame.seconds === 0){
+            setGameOver(true);
+        }
+    },[countDownGame.seconds])
 
     // Maneja la conexión de un conector de origen a destino
     const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
         setAttempts(attempts + 1);
-        if(errorAttempts < 5){
+        if(errorAttempts < 4){
             if(originId === destinationId) {
                 setCables([...cables, { originId, destinationId, x1, y1, x2, y2, color }]);
                 setPoints(points + 10);
-                if(cables.length === 4) {
+                console.log(cables.length);
+                
+                if(cables.length === 3) {
                     setGameOver(true);
                 }
             } else {
                 setErrorAttempts(errorAttempts + 1);
             }
         } else {
+            console.log('llego antes de tiempo');
+            
             setGameOver(true);
         }
-        /* if(originId !== destinationId) {
-            setCables(cables.filter((cable, index) => index === cables.length - 1))
-        } */
     };
 
     // Función para barajar los conectores de destino
@@ -174,6 +180,12 @@ const Game = (props: Props) => {
                 <Paper radius={'md'}>
                     Puntos: {points}
                 </Paper>
+                <Paper radius={'md'}>
+                    Intentos: {attempts}
+                </Paper>
+                <Paper radius={'md'}>
+                    Intentos errádos: {errorAttempts} / 4
+                </Paper>
             </Group>
             {showColor &&
                 <Group justify='center'>
@@ -244,6 +256,23 @@ const Game = (props: Props) => {
                     ))}
                 </Stack>
             </Group>
+
+            {gameOver &&
+                <Modal
+                    opened={gameOver}
+                    onClose={close}
+                    centered
+                    withCloseButton={false} 
+                    closeOnClickOutside={false}
+			        closeOnEscape={false}
+                >
+                    Finalizo el juego
+
+                    <Group justify='center'>
+                        <Button onClick={() => {close(); setActions('end')}}>Guardar</Button>
+                    </Group>
+                </Modal>
+            }
         </Stack>
     )
 }

@@ -19,11 +19,11 @@ const App: React.FC = () => {
     <Container h={'100vh'} fluid>
       <Center h={'100%'} >
         <Stack gap={'xl'} p={'xl'} justify='center' align='center'>
-          { actions === 's' && 
-            <Stack onClick={()=> setActions('register')} style={{cursor: 'pointer'}} justify='center'>
+          { actions === '' && 
+            <Stack onClick={()=> setActions('register')} style={{cursor: 'pointer'}} justify='center' gap={'xl'}>
               <Title order={1} ta={'center'}>Bienvenidos</Title>
-              <Image src={'./assets/cableD.jpg'} h={50} />
-              <Text ta={'center'}>Has tu magia</Text>
+              {/* <Image src={'./assets/cableD.jpg'} h={30} />
+              <Text ta={'center'}>Has tu magia</Text> */}
             </Stack>
           }
           { actions === 'register' && 
@@ -50,7 +50,7 @@ const App: React.FC = () => {
               </Group>
             </Stack>
           }
-          { actions === '' &&
+          { actions === 'game' &&
             <>
               {/* <CableGame /> */}
               {/* <Canvas /> */}
