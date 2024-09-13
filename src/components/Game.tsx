@@ -19,7 +19,6 @@ const Game = () => {
     const [destinationConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
     const [cables, setCables] = useState<{ originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[]>([]);
     const [originId, setOriginId] = useState<number>(0);
-    const [color, setColor] = useState<string>('');
     const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
     const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
     const positionRef = useRef<{x1: number, y1: number, x2: number, y2: number}>();
@@ -36,7 +35,6 @@ const Game = () => {
     useEffect(() => {
         setTimeout(() => {
             setShowColor(false);
-            
         },3000)
     }, []);
 
@@ -67,13 +65,14 @@ const Game = () => {
             ctx.beginPath();
             ctx.moveTo(initialPosition.x, initialPosition.y);
             ctx.lineTo(x, y);
+            ctx.lineWidth = 5;
             ctx.strokeStyle = '#000000';
             ctx.stroke();
         }
     };
       
     const handleCanvasClick = (e: React.MouseEvent<Element, MouseEvent>) => {
-        if (canvas && ctx /* && !isInitialPositionSet */) {
+        if (canvas && ctx) {
             setIsInitialPositionSet(!isInitialPositionSet);
             const rect = canvas.getBoundingClientRect();
             const x = e.nativeEvent.clientX - rect.left;
@@ -82,22 +81,17 @@ const Game = () => {
         }
     };
 
-    const origin = (e: React.MouseEvent<HTMLDivElement>, originId: number, color: string) => {
+    const origin = (e: React.MouseEvent<HTMLDivElement>, originId: number) => {
         const x = e.nativeEvent.clientX;
         const y = e.nativeEvent.clientY;
         if(canvas && ctx) {
             const rect = canvas!.getBoundingClientRect();
             const canvasX = x - rect.left;
             const canvasY = y - rect.top;
-            setColor(color);
             positionRef.current = { ...positionRef.current, x1: canvasX, y1: canvasY, x2: canvasX, y2: canvasY };
             handleCanvasClick(e);
             setOriginId(originId);
         }
-        
-        /* positionRef.current = ({...positionRef.current, x1: x, y1: y, x2: x, y2: y})
-        handleCanvasClick(e);
-        setOriginId(originId); */
     }
 
     const destination = (e: React.MouseEvent<HTMLDivElement>, destineId: number, color: string) => {
@@ -108,23 +102,12 @@ const Game = () => {
             const canvasX = x - rect.left;
             const canvasY = y - rect.top;
             const lastPosition = positionRef.current;
-            setColor(color);
             if (lastPosition) {
                 positionRef.current = { ...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: canvasX, y2: canvasY };
                 handleCanvasClick(e);
                 handleConnect(originId, destineId, lastPosition.x1, lastPosition.y1, canvasX, canvasY, color);
             }
         }
-        
-        /* const lastPosition = positionRef.current;
-        setColor(color)
-        if(lastPosition) {
-            positionRef.current = ({...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: x, y2: y})
-            handleCanvasClick(e, true);
-            console.log(lastPosition.x1, lastPosition.y1, x,y, 'destination');
-            
-            handleConnect(originId, destineId, lastPosition.x1, lastPosition.y1, x, y, color)
-        } */
     }
     
     useEffect(() => {
@@ -162,7 +145,7 @@ const Game = () => {
                                 cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
                                 /* zIndex: 1000 */
                             }}
-                            onClick={(e) => origin(e, connector.id, connector.color)}
+                            onClick={(e) => origin(e, connector.id)}
                         />
                     </div>
                 ))}
