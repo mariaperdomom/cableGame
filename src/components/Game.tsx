@@ -19,11 +19,12 @@ const Game = () => {
     const [destinationConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
     const [cables, setCables] = useState<{ originId: number; destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string }[]>([]);
     const [originId, setOriginId] = useState<number>(0);
-    const [destineId, setDestineId] = useState<number>(0);
     const [color, setColor] = useState<string>('');
     const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
     const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
-    const positionRef = useRef<{x1: number, y1: number, x2: number, y2: number}>()
+    const positionRef = useRef<{x1: number, y1: number, x2: number, y2: number}>();
+    const [initialPosition, setInitialPosition] = useState<{ x: number; y: number } | null>(null);
+    const [isInitialPositionSet, setIsInitialPositionSet] = useState(false);
 
     useEffect(() => {
         const canvas = document.getElementById('canvasGame') as HTMLCanvasElement;
@@ -34,14 +35,16 @@ const Game = () => {
     
     useEffect(() => {
         setTimeout(() => {
-        setShowColor(false);
+            setShowColor(false);
+            
         },3000)
     }, []);
 
     // Maneja la conexión de un conector de origen a destino
     const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
-        if(originId === destinationId) {
         setCables([...cables, { originId, destinationId, x1, y1, x2, y2, color }]);
+        if(originId !== destinationId) {
+            setCables(cables.filter((cable, index) => index === cables.length - 1))
         }
     };
 
@@ -55,66 +58,111 @@ const Game = () => {
         return cables.find((cable) => cable.originId === connectorId && cable.destinationId === connectorId);
     };
 
-    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        const x = e.nativeEvent.offsetX;
-        const y = e.nativeEvent.offsetY;
-        positionRef.current = ({...positionRef.current, x1: x, y1: y, x2: x, y2: y})
-        /* setConnections([...connections, { x1: x, y1: y, x2: x, y2: y }]);
-        console.log(connections, 'down'); */
-        
+    const handleMouseMove = (e: React.MouseEvent<Element, MouseEvent>) => {
+        if (canvas && ctx && initialPosition && isInitialPositionSet) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rect = canvas.getBoundingClientRect();
+            const x = e.nativeEvent.clientX - rect.left;
+            const y = e.nativeEvent.clientY - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(initialPosition.x, initialPosition.y);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+        }
     };
-    
-    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const x = e.nativeEvent.offsetX;
-    const y = e.nativeEvent.offsetY;
-    const lastPosition = positionRef.current;
-    positionRef.current = ({...positionRef.current, x1: lastPosition!.x1, y1: lastPosition!.y1, x2: x, y2: y})
+      
+    const handleCanvasClick = (e: React.MouseEvent<Element, MouseEvent>) => {
+        if (canvas && ctx /* && !isInitialPositionSet */) {
+            setIsInitialPositionSet(!isInitialPositionSet);
+            const rect = canvas.getBoundingClientRect();
+            const x = e.nativeEvent.clientX - rect.left;
+            const y = e.nativeEvent.clientY - rect.top;
+            setInitialPosition({ x, y });
+        }
     };
 
-    const handleMouseUp = () => {
-    const lastPosition = positionRef.current;
-    handleConnect(originId, destineId, lastPosition!.x1, lastPosition!.y1, lastPosition!.x2,lastPosition!.y2, color)
-    };
+    const origin = (e: React.MouseEvent<HTMLDivElement>, originId: number, color: string) => {
+        const x = e.nativeEvent.clientX;
+        const y = e.nativeEvent.clientY;
+        if(canvas && ctx) {
+            const rect = canvas!.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+            setColor(color);
+            positionRef.current = { ...positionRef.current, x1: canvasX, y1: canvasY, x2: canvasX, y2: canvasY };
+            handleCanvasClick(e);
+            setOriginId(originId);
+        }
+        
+        /* positionRef.current = ({...positionRef.current, x1: x, y1: y, x2: x, y2: y})
+        handleCanvasClick(e);
+        setOriginId(originId); */
+    }
+
+    const destination = (e: React.MouseEvent<HTMLDivElement>, destineId: number, color: string) => {
+        const x = e.nativeEvent.clientX;
+        const y = e.nativeEvent.clientY;
+        if(canvas && ctx) {
+            const rect = canvas!.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+            const lastPosition = positionRef.current;
+            setColor(color);
+            if (lastPosition) {
+                positionRef.current = { ...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: canvasX, y2: canvasY };
+                handleCanvasClick(e);
+                handleConnect(originId, destineId, lastPosition.x1, lastPosition.y1, canvasX, canvasY, color);
+            }
+        }
+        
+        /* const lastPosition = positionRef.current;
+        setColor(color)
+        if(lastPosition) {
+            positionRef.current = ({...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: x, y2: y})
+            handleCanvasClick(e, true);
+            console.log(lastPosition.x1, lastPosition.y1, x,y, 'destination');
+            
+            handleConnect(originId, destineId, lastPosition.x1, lastPosition.y1, x, y, color)
+        } */
+    }
     
     useEffect(() => {
-    if (ctx) {
-        ctx.clearRect(0, 0, canvas!.width, canvas!.height);
-        cables.forEach((cable) => {
-        ctx.beginPath();
-        ctx.moveTo(cable.x1, cable.y1);
-        ctx.lineTo(cable.x2, cable.y2);
-        ctx.lineWidth = 15;
-        /* ctx.strokeStyle = cable.color; */
-        ctx.stroke();
-        });
-    }
-    }, [cables]);
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+            cables.forEach((cable) => {
+            ctx.beginPath();
+            ctx.moveTo(cable.x1, cable.y1);
+            ctx.lineTo(cable.x2, cable.y2);
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = cable.color;
+            ctx.stroke();
+            });
+        }
+    }, [cables, ctx]);
 
     return (
         <Group justify='space-between' gap={0} /* w={'35vw'} */>
-            <Stack mr={-20}>
+            <Stack mr={-10}>
                 <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
                 {originConnectors.map((connector) => (
                     <div key={connector.id}>
-                        <Box 
+                        <Box
                             className={classes.connector}
                             style={{
                                 width: '140px',
                                 height: '20px',
-                                backgroundColor: showColor ? connector.color  : ( !isConnected ? 'gray' : connector.color),
+                                backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? 'black' : connector.color),
                                 borderRadius: '3px',
                                 margin: '10px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 border: '1px solid black',
-                                cursor: isConnected! ? 'not-allowed' : 'pointer',
+                                cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
                                 /* zIndex: 1000 */
                             }}
-                            onClick={() => {
-                                setOriginId(connector.id);
-                                setColor(connector.color);
-                            }}
+                            onClick={(e) => origin(e, connector.id, connector.color)}
                         />
                     </div>
                 ))}
@@ -123,12 +171,11 @@ const Game = () => {
                 id="canvasGame"
                 width='250'
                 height='250'
-                style={{backgroundColor: 'pink', zIndex: 10}}
-                onMouseDown={handleMouseDown}
+                style={{/* backgroundColor: 'pink', */ zIndex: 10}}
+                onClick={handleCanvasClick}
                 onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
             />
-            <Stack ml={-20}>
+            <Stack ml={-10}>
                 <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
                 {destinationConnectors.map((connector) => (
                 <div key={connector.id}>
@@ -137,19 +184,17 @@ const Game = () => {
                         style={{
                             width: '140px',
                             height: '20px',
-                            backgroundColor: showColor ? connector.color  : ( !isConnected ? 'gray' : connector.color),
+                            backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'black' : connector.color),
                             borderRadius: '3px',
                             margin: '10px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             border: '1px solid black',
-                            cursor: isConnected! ? 'not-allowed' : 'pointer',
+                            cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
                             /* zIndex: 1000 */
                         }}
-                        onClick={() => {
-                            setDestineId(connector.id);
-                        }}
+                        onClick={(e) => destination(e, connector.id, connector.color)}
                     />
                 </div>
                 ))}
