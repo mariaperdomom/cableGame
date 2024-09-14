@@ -75,11 +75,11 @@ const Game = (props: Props) => {
     }, [cables, ctx]);
 
     //Si no hizo nada y solo se quedo viendo llama a la funcion para abrir el modal
-    useEffect(() => {
+    /* useEffect(() => {
         if(countDownGame.seconds === 0){
             setGameOver(true);
         }
-    },[countDownGame.seconds])
+    },[countDownGame.seconds]) */
 
     useEffect(() => {
         if(gameOver){
@@ -185,6 +185,66 @@ const Game = (props: Props) => {
         }
     }
 
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, originId: number) => {
+        const x = e.nativeEvent.clientX;
+        const y = e.nativeEvent.clientY;
+        if(canvas && ctx) {
+            const rect = canvas!.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+            positionRef.current = { ...positionRef.current, x1: canvasX, y1: canvasY, x2: canvasX, y2: canvasY };
+            handleCanvasDrag(e);
+            setOriginId(originId);
+        }
+    }
+    
+    const handleCanvasDrag = (e: React.DragEvent<Element>) => {
+        if (canvas && ctx) {
+            setIsInitialPositionSet(!isInitialPositionSet);
+            const rect = canvas.getBoundingClientRect();
+            const x = e.nativeEvent.clientX - rect.left;
+            const y = e.nativeEvent.clientY - rect.top;
+            setInitialPosition({ x, y });
+        }
+    }
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    }
+
+    const handleDragOverCanvas = (e: React.DragEvent<HTMLCanvasElement>) => {
+        e.preventDefault();
+        if (canvas && ctx && initialPosition && isInitialPositionSet) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rect = canvas.getBoundingClientRect();
+            const x = e.nativeEvent.clientX - rect.left;
+            const y = e.nativeEvent.clientY - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(initialPosition.x, initialPosition.y);
+            ctx.lineTo(x, y);
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+        }
+    }
+
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>, destinationId: number, color: string) => {        
+        const x = e.nativeEvent.clientX;
+        const y = e.nativeEvent.clientY;
+        if(canvas && ctx) {
+            const rect = canvas!.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+            const lastPosition = positionRef.current;
+            if (lastPosition) {
+                positionRef.current = { ...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: canvasX, y2: canvasY };
+                handleCanvasDrag(e);
+                handleConnect(originId, destinationId, lastPosition.x1, lastPosition.y1, canvasX, canvasY, color);
+            }
+        }
+    }
+
     return (
         <Stack>
             <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
@@ -202,7 +262,7 @@ const Game = (props: Props) => {
                     Intentos errádos: {errorAttempts} / 4
                 </Paper>
             </Group>
-            {showColor &&
+            {/* {showColor &&
                 <Group justify='center'>
                     <Avatar 
                         radius="xl" 
@@ -212,7 +272,7 @@ const Game = (props: Props) => {
                         style={{position: 'absolute', top: '55vh'}}
                     >{countDownOrigin.seconds}</Avatar>
                 </Group>
-            }
+            } */}
             <Group justify='space-between' gap={0} /* w={'35vw'} */>
                 <Stack mr={-10}>
                     <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
@@ -234,6 +294,8 @@ const Game = (props: Props) => {
                                     /* zIndex: 1000 */
                                 }}
                                 onClick={(e) => origin(e, connector.id)}
+                                draggable={!isConnected(connector.id)}
+                                onDragStart={(e) => handleDragStart(e, connector.id)}
                             />
                         </div>
                     ))}
@@ -245,6 +307,7 @@ const Game = (props: Props) => {
                     style={{/* backgroundColor: 'pink', */ zIndex: 10}}
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
+                    onDragOver={handleDragOverCanvas}
                 />
                 <Stack ml={-10}>
                     <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
@@ -266,6 +329,8 @@ const Game = (props: Props) => {
                                 /* zIndex: 1000 */
                             }}
                             onClick={(e) => destination(e, connector.id, connector.color)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, connector.id, connector.color)}
                         />
                     </div>
                     ))}
