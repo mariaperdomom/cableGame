@@ -281,7 +281,7 @@ const Game = (props: Props) => {
                                 className={classes.connector}
                                 style={{
                                     width: '140px',
-                                    height: '20px',
+                                    height: '25px',
                                     backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? 'black' : connector.color),
                                     borderRadius: '3px',
                                     margin: '10px',
@@ -316,7 +316,7 @@ const Game = (props: Props) => {
                             className={classes.connector}
                             style={{
                                 width: '140px',
-                                height: '20px',
+                                height: '25px',
                                 backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'black' : connector.color),
                                 borderRadius: '3px',
                                 margin: '10px',
@@ -327,7 +327,6 @@ const Game = (props: Props) => {
                                 cursor: (isConnected(connector.id) || !isInitialPositionSet) ? 'not-allowed' : 'pointer',
                                 /* zIndex: 1000 */
                             }}
-                            tabIndex={0}
                             onClick={(e) => destination(e, connector.id, connector.color)}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, connector.id, connector.color)}
