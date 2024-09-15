@@ -40,7 +40,7 @@ const Game = (props: Props) => {
     const waitTime : number = 3000;
     const [activeCountDown, setActiveCountDown] = useState<boolean>(false);
     const countDownOrigin = useCountDown(3, 'origin');
-    const countDownGame = useCountDown(12, 'game');
+    const countDownGame = useCountDown(22, 'game');
     const [opened, { close }] = useDisclosure(false);
 
     //Declaración del canvas para mostrar las líneas de conección
@@ -228,7 +228,6 @@ const Game = (props: Props) => {
         }
     }
 
-
     const handleDrop = (e: React.DragEvent<HTMLDivElement>, destinationId: number, color: string) => {        
         const x = e.nativeEvent.clientX;
         const y = e.nativeEvent.clientY;
@@ -245,12 +244,73 @@ const Game = (props: Props) => {
         }
     }
 
+
+    const handleTouchMove = (e: React.TouchEvent<Element>) => {
+        e.preventDefault();
+        if (canvas && ctx && initialPosition && isInitialPositionSet) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rect = canvas.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(initialPosition.x, initialPosition.y);
+            ctx.lineTo(x, y);
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+        }
+    };
+      
+    //Maneja el control de la posición de los elementos seleccionados para poder obtener las coordenadas
+    const handleCanvasTouch = (e: React.TouchEvent<Element>) => {
+        if (canvas && ctx) {
+            setIsInitialPositionSet(!isInitialPositionSet);
+            const rect = canvas.getBoundingClientRect();
+            const x = e.changedTouches[0].clientX - rect.left;
+            const y = e.changedTouches[0].clientY - rect.top;
+            setInitialPosition({ x, y });
+        }
+    };
+
+    //Obtención de la data de origin
+    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, originId: number) => {
+        console.log(e)
+        const x = e.touches[0].clientX;
+        const y = e.touches[0].clientY;
+        if(canvas && ctx) {
+            const rect = canvas!.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+            positionRef.current = { ...positionRef.current, x1: canvasX, y1: canvasY, x2: canvasX, y2: canvasY };
+            handleCanvasTouch(e);
+            setOriginId(originId);
+        }
+    }
+
+    //Obtención de la data de destino
+    const handleTouchEnd = (e: React.TouchEvent<Element>, destinationId: number, color: string) => {
+        console.log(e)
+        const x = e.changedTouches[0].clientX;
+        const y = e.changedTouches[0].clientY;
+        if(canvas && ctx) {
+            const rect = canvas!.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+            const lastPosition = positionRef.current;
+            if (lastPosition) {
+                positionRef.current = { ...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: canvasX, y2: canvasY };
+                handleCanvasTouch(e);
+                handleConnect(originId, destinationId, lastPosition.x1, lastPosition.y1, canvasX, canvasY, color);
+            }
+        }
+    }
+    
     return (
         <Stack>
             <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
             <Group justify='center' align='center' gap={'xl'}>
                 <Paper radius={'md'}>
-                    Tiempo: {activeCountDown ? countDownGame.seconds : '10' }
+                    Tiempo: {activeCountDown ? countDownGame.seconds : '20' }
                 </Paper>
                 <Paper radius={'md'}>
                     Puntos: {points}
@@ -296,6 +356,7 @@ const Game = (props: Props) => {
                                 onClick={(e) => origin(e, connector.id)}
                                 draggable={!isConnected(connector.id)}
                                 onDragStart={(e) => handleDragStart(e, connector.id)}
+                                onTouchStart={(e) => handleTouchStart(e, connector.id)}
                             />
                         </div>
                     ))}
@@ -308,6 +369,7 @@ const Game = (props: Props) => {
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
                     onDragOver={handleDragOverCanvas}
+                    onTouchMove={handleTouchMove}
                 />
                 <Stack ml={-10}>
                     <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
@@ -331,6 +393,7 @@ const Game = (props: Props) => {
                             onClick={(e) => destination(e, connector.id, connector.color)}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, connector.id, connector.color)}
+                            onTouchEnd={(e) => handleTouchEnd(e, connector.id, connector.color)}
                         />
                     </div>
                     ))}
