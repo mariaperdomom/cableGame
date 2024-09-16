@@ -22,9 +22,16 @@ body {
 
 @keyframes pulse-animation {
     0% {
-      box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
     }
     100% {
-      box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+        box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
     }
-  }
+}
+
+.blurBackground {
+    backdrop-filter: blur(10px); /* Ajusta el valor del desenfoque según tus necesidades */
+    background: rgba(255, 255, 255, 0.3); /* Fondo con transparencia para ver el desenfoque */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

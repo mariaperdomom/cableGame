@@ -43,30 +43,31 @@ const Register = (props: Props) => {
     }
 
     return (
-        <Stack gap={'xl'}>
-            <Title order={1} style={{cursor: 'pointer'}} ta={'center'}>Registro</Title>
+        <Stack gap={'xl'} justify='center' align='center' h={'100%'}>
+            <Title order={1} style={{cursor: 'pointer'}} ta={'center'} mb={'xl'}>Registro</Title>
             <TextInput 
                 label='Código'
                 placeholder='m1e2a3'
                 leftSection={<IconAuth2fa />}
-                size='lg'
+                size='xl'
                 withAsterisk
                 value={code}
                 onChange={(event) => setCode(event.currentTarget.value)}
                 minLength={6}
                 maxLength={6}
-                error={errorCode && 'El código ingresado no está registrado en el evento'}
+                error={errorCode && !isValidated && 'El código ingresado no está registrado en el evento'}
+                w={'30%'}
             />
-            <Group gap={5} align='center' mt={-25}>
+            <Group gap={5} align='center' mt={-25} w={'30%'}>
                 <IconInfoCircle color='gray'/>
                 <Text c={'gray'}>Código de 6 dígitos alphanúmericos</Text>
             </Group>
-            <Group justify='end'>
-                <Button size='lg' variant='subtle' onClick={()=> {setActions('')}}>Cancelar</Button>
+            <Group justify='end' mt={'md'} w={'30%'}>
+                <Button size='xl' color='dark' variant='subtle' onClick={()=> {setActions('')}}>Cancelar</Button>
                 { !isValidated ? 
-                    <Button size='lg' /* variant='subtle' */ onClick={validateCode}>validar</Button>
+                    <Button size='xl' color='dark' onClick={validateCode}>Válidar</Button>
                     :
-                    <Button size='lg' onClick={nextStep}>Siguiente</Button>
+                    <Button size='xl' color='dark' onClick={nextStep}>Siguiente</Button>
                 }
 
             </Group>

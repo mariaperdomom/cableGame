@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Group, Modal, Paper, Stack, Text, Title } from '@mantine/core';
+import { Avatar, Box, Button, Group, Indicator, Modal, Stack, Text, Title } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react'
 import classes from './Connector.module.css';
 import { useCountDown } from './useCountDown';
@@ -21,7 +21,7 @@ const Game = (props: Props) => {
         { id: 1, color: 'red'},
         { id: 2, color: 'blue'},
         { id: 3, color: 'green'},
-        { id: 4, color: 'yellow'},
+        { id: 4, color: 'brown'},
     ];
     const [showColor,setShowColor] = useState<boolean>(true);
     const [originConnectors] = useState<ConnectorData[]>(shuffle([...initialConnectors]));
@@ -86,7 +86,6 @@ const Game = (props: Props) => {
             const save = async () => {
                 try {
                     const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode, points: points + 10})
-                    console.log(saveUserParticipation);
                     if(saveUserParticipation) {
                         setActions('game')
                     }
@@ -111,6 +110,7 @@ const Game = (props: Props) => {
                 }
             } else {
                 setErrorAttempts(errorAttempts + 1);
+                setOriginId(0);
             }
         } else {
             setGameOver(true);
@@ -245,93 +245,82 @@ const Game = (props: Props) => {
     }
     
     return (
-        <Stack>
+        <Stack gap={'xl'} h={'100%'} justify='center' px={0}>
             <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
             <Group justify='center' align='center' gap={'xl'}>
-                <Paper radius={'md'}>
-                    Tiempo: {activeCountDown ? countDownGame.seconds : '20' }
-                </Paper>
-                <Paper radius={'md'}>
-                    Puntos: {points}
-                </Paper>
-                <Paper radius={'md'}>
-                    Intentos: {attempts}
-                </Paper>
-                <Paper radius={'md'}>
-                    Intentos errádos: {errorAttempts} / 4
-                </Paper>
+                <Text size='xl'>Tiempo: {activeCountDown ? countDownGame.seconds : '20' }</Text>
+                <Text size='xl'>Puntos: {points}</Text>
+                <Text size='xl'>Intentos fallidos: {errorAttempts} / 4</Text>
             </Group>
             {showColor &&
                 <Group justify='center'>
                     <Avatar 
-                        radius="xl" 
-                        size="lg" 
+                        radius="100" 
+                        size="xl" 
                         src={null} 
                         className={classes.pulse}
                         style={{position: 'absolute', top: '55vh'}}
                     >{countDownOrigin.seconds}</Avatar>
                 </Group>
             }
-            <Group justify='space-between' gap={0} /* w={'35vw'} */>
+            <Group justify='space-between' gap={0}>
                 <Stack mr={-10}>
-                    <Text fz={'h4'} ta={'center'} fw={'bold'}>Orígen</Text>
+                    <Text fz={'h2'} ta={'center'} fw={'bold'}>Orígen</Text>
                     {originConnectors.map((connector) => (
-                        <div key={connector.id}>
-                            <Box
-                                className={classes.connector}
-                                style={{
-                                    width: '140px',
-                                    height: '25px',
-                                    backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? 'black' : connector.color),
-                                    borderRadius: '3px',
-                                    margin: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    border: '1px solid black',
-                                    cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
-                                    /* zIndex: 1000 */
-                                }}
-                                onClick={(e) => origin(e, connector.id)}
-                                draggable={!isConnected(connector.id)}
-                                onDragStart={(e) => handleDragStart(e, connector.id)}
-                            />
-                        </div>
+                        <Box
+                            key={connector.id}
+                            className={`${classes.connector} ${originId === connector.id && classes.blurBackground}`}
+                            style={{
+                                width: '300px',
+                                height: '40px',
+                                backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? originId === connector.id ? 'var(--mantine-color-gray-8)' : 'var(--mantine-color-dark-9)' : connector.color),
+                                borderRadius: '3px',
+                                margin: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '2px solid black',
+                                cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
+                            }}
+                            onClick={(e) => origin(e, connector.id)}
+                            draggable={!isConnected(connector.id)}
+                            onDragStart={(e) => handleDragStart(e, connector.id)}
+                        />
                     ))}
                 </Stack>
                 <canvas 
                     id="canvasGame"
-                    width='250'
-                    height='250'
+                    width='460'
+                    height='320'
                     style={{/* backgroundColor: 'pink', */ zIndex: 10}}
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
                     onDragOver={handleDragOverCanvas}
                 />
                 <Stack ml={-10}>
-                    <Text fz={'h4'} ta={'center'} fw={'bold'}>Destino</Text>
+                    <Text fz={'h2'} ta={'center'} fw={'bold'}>Destino</Text>
                     {destinationConnectors.map((connector) => (
-                    <div key={connector.id}>
                         <Box 
+                            key={connector.id}
                             className={classes.connector}
                             style={{
-                                width: '140px',
-                                height: '25px',
-                                backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'black' : connector.color),
+                                width: '300px',
+                                height: '40px',
+                                backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'var(--mantine-color-dark-9)' : connector.color),
                                 borderRadius: '3px',
                                 margin: '10px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                border: '1px solid black',
+                                border: '2px solid black',
                                 cursor: (isConnected(connector.id) || !isInitialPositionSet) ? 'not-allowed' : 'pointer',
-                                /* zIndex: 1000 */
                             }}
                             onClick={(e) => destination(e, connector.id, connector.color)}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, connector.id, connector.color)}
-                        />
-                    </div>
+                        >
+                            {!isConnected(connector.id) && <Indicator position="middle-start" size={24} processing={isInitialPositionSet} mr={265}  color={isInitialPositionSet ? 'var(--mantine-color-gray-7)' : 'transparent'} />}
+                        </Box>
                     ))}
                 </Stack>
             </Group>
@@ -345,11 +334,14 @@ const Game = (props: Props) => {
                     closeOnClickOutside={false}
 			        closeOnEscape={false}
                 >
-                    Finalizo el juego
+                    <Stack gap={'xl'} justify='center'>
+                        <Text size={'xl'} ta={'center'}>¡Finalizó el juego {userCode}!</Text>
+                        <Text size={'xl'} ta={'center'}>Puntaje: {points}</Text>
+                        <Text size={'xl'} ta={'center'}>Intentos: {attempts}</Text>
+                        <Text size={'xl'} ta={'center'}>Intentos fallidos: {errorAttempts}</Text>
+                        <Button onClick={() => {close(); setActions('end')}} color='dark' size='lg'>Confirmar</Button>
+                    </Stack>
 
-                    <Group justify='center'>
-                        <Button onClick={() => {close(); setActions('end')}}>Confirmar</Button>
-                    </Group>
                 </Modal>
             }
         </Stack>
