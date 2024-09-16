@@ -11,7 +11,7 @@ const App: React.FC = () => {
     <Container h={'100vh'} fluid bg={'#FEE66F'} p={0}>
      {/*  <Center h={'100%'} w={'100%'}> */}
         {/* <Stack gap={'xl'} p={'xl'} justify='center' align='center'> */}
-          { actions === 's' && 
+          { actions === '' && 
             <Stack onClick={()=> setActions('register')} style={{cursor: 'pointer'}} justify='center' gap={'xl'} h={'100%'}>
               <Title order={1} ta={'center'}>Bienvenidos</Title>
               {/* <Image src={'./assets/cableD.jpg'} h={30} />
@@ -21,7 +21,7 @@ const App: React.FC = () => {
           { actions === 'register' && 
             <Register setActions={setActions} setUserCode={setUserCode}/>
           }
-          { actions === '' &&
+          { actions === 'game' &&
              <Game setActions={setActions} userCode={userCode}/>
           }
           { actions === 'end' &&
