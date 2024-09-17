@@ -13,10 +13,11 @@ interface ConnectorData {
 interface Props {
     setActions: (action: string) => void; 
     userCode: string;
+    userName: string;
 }
 
 const Game = (props: Props) => {
-    const { setActions, userCode } = props;
+    const { setActions, userCode, userName } = props;
     const initialConnectors = [
         { id: 1, color: 'red'},
         { id: 2, color: 'blue'},
@@ -330,7 +331,7 @@ const Game = (props: Props) => {
 			        closeOnEscape={false}
                 >
                     <Stack gap={'xl'} justify='center'>
-                        <Text size={'xl'} ta={'center'}>¡Finalizó el juego {userCode}!</Text>
+                        <Text size={'xl'} ta={'center'} fw={'bold'}>¡Finalizó el juego {userName}!</Text>
                         <Text size={'xl'} ta={'center'}>Puntaje: {points}</Text>
                         <Text size={'xl'} ta={'center'}>Intentos: {attempts}</Text>
                         <Text size={'xl'} ta={'center'}>Intentos fallidos: {errorAttempts}</Text>
