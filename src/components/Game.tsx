@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Group, Indicator, Modal, Stack, Text, Title } from '@mantine/core';
+import { Avatar, Badge, Button, Group, Indicator, Modal, Stack, Text, Title } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react'
 import classes from './Connector.module.css';
 import { useCountDown } from './useCountDown';
@@ -263,65 +263,60 @@ const Game = (props: Props) => {
                     >{countDownOrigin.seconds}</Avatar>
                 </Group>
             }
-            <Group justify='space-between' gap={0}>
-                <Stack mr={-10}>
+            <Group justify='space-between' gap={0} wrap='nowrap'>
+                <Stack w={'28vw'}>
                     <Text fz={'h2'} ta={'center'} fw={'bold'}>Orígen</Text>
-                    {originConnectors.map((connector) => (
-                        <Box
-                            key={connector.id}
-                            className={`${classes.connector} ${originId === connector.id && classes.blurBackground}`}
-                            style={{
-                                width: '300px',
-                                height: '40px',
-                                backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? originId === connector.id ? 'var(--mantine-color-gray-8)' : 'var(--mantine-color-dark-9)' : connector.color),
-                                borderRadius: '3px',
-                                margin: '10px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '2px solid black',
-                                cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
-                            }}
-                            onClick={(e) => origin(e, connector.id)}
-                            draggable={!isConnected(connector.id)}
-                            onDragStart={(e) => handleDragStart(e, connector.id)}
-                        />
-                    ))}
+                    <Stack gap={80}>
+                        {originConnectors.map((connector) => (
+                            <Badge
+                                key={connector.id}
+                                className={`${classes.connector} ${originId === connector.id && classes.blurBackground}`}
+                                style={{
+                                    width: '100%',
+                                    height: '40px',
+                                    backgroundColor: showColor ? connector.color : ( !isConnected(connector.id) ? originId === connector.id ? 'var(--mantine-color-gray-8)' : 'var(--mantine-color-dark-9)' : connector.color),
+                                    borderRadius: '3px',
+                                    border: '2px solid black',
+                                    cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
+                                }}
+                                onClick={(e) => origin(e, connector.id)}
+                                draggable={!isConnected(connector.id)}
+                                onDragStart={(e) => handleDragStart(e, connector.id)}
+                            />
+                        ))}
+                    </Stack>
                 </Stack>
                 <canvas 
                     id="canvasGame"
-                    width='460'
-                    height='320'
+                    width={window.innerWidth * 0.5}
+                    height='480'
                     style={{/* backgroundColor: 'pink', */ zIndex: 10}}
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
                     onDragOver={handleDragOverCanvas}
                 />
-                <Stack ml={-10}>
+                <Stack w={'28vw'}>
                     <Text fz={'h2'} ta={'center'} fw={'bold'}>Destino</Text>
-                    {destinationConnectors.map((connector) => (
-                        <Box 
-                            key={connector.id}
-                            className={classes.connector}
-                            style={{
-                                width: '300px',
-                                height: '40px',
-                                backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'var(--mantine-color-dark-9)' : connector.color),
-                                borderRadius: '3px',
-                                margin: '10px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                border: '2px solid black',
-                                cursor: (isConnected(connector.id) || !isInitialPositionSet) ? 'not-allowed' : 'pointer',
-                            }}
-                            onClick={(e) => destination(e, connector.id, connector.color)}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, connector.id, connector.color)}
-                        >
-                            {!isConnected(connector.id) && <Indicator position="middle-start" size={24} processing={isInitialPositionSet} mr={265}  color={isInitialPositionSet ? 'var(--mantine-color-gray-7)' : 'transparent'} />}
-                        </Box>
-                    ))}
+                    <Stack gap={80}>
+                        {destinationConnectors.map((connector) => (
+                            <Badge 
+                                key={connector.id}
+                                className={classes.connector}
+                                style={{
+                                    width: '100%',
+                                    height: '40px',
+                                    backgroundColor: showColor ? connector.color  : ( !isConnected(connector.id) ? 'var(--mantine-color-dark-9)' : connector.color),
+                                    borderRadius: '3px',
+                                    border: '2px solid black',
+                                    cursor: (isConnected(connector.id) || !isInitialPositionSet) ? 'not-allowed' : 'pointer',
+                                }}
+                                leftSection={!isConnected(connector.id) && <Indicator position="middle-start" size={24} processing={isInitialPositionSet} mr={265} color={isInitialPositionSet ? 'var(--mantine-color-gray-7)' : 'transparent'} />}
+                                onClick={(e) => destination(e, connector.id, connector.color)}
+                                onDragOver={handleDragOver}
+                                onDrop={(e) => handleDrop(e, connector.id, connector.color)}
+                            />
+                        ))}
+                    </Stack>
                 </Stack>
             </Group>
 
