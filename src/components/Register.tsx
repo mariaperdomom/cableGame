@@ -18,16 +18,29 @@ const Register = (props: Props) => {
     
     const validateCode = async () => {
         try {
-            const getAttendeeByUserCode = await checkInServiceTs.getAttendeeByUserCode({userCode: code})
+            const getAttendeeByUserCode = await checkInServiceTs.getAttendeeByUserCode({userCode: code});
             if(getAttendeeByUserCode) {
                 setIsValidated(true);
                 setUserCode(code);
-                setUserName(getAttendeeByUserCode.properties.names)
+                setUserName(getAttendeeByUserCode.properties.names);
             } else {
                 setErrorCode(true);
             }
         } catch (err) {
             setErrorCode(true);
+        }
+    }
+
+    const participation = async () => {
+        try {
+            const getUserParticipation = await checkInServiceTs.getUserParticipation({userCode: code});
+            if(getUserParticipation?.points) {                
+                setActions('game')
+            } else {
+                nextStep();
+            }
+        } catch (err) {
+            console.log(err)
         }
     }
     
@@ -76,9 +89,8 @@ const Register = (props: Props) => {
                 { !isValidated ? 
                     <Button size='xl' color='dark' onClick={validateCode}>Válidar</Button>
                     :
-                    <Button size='xl' color='dark' onClick={nextStep}>Siguiente</Button>
+                    <Button size='xl' color='dark' onClick={participation}>Siguiente</Button>
                 }
-
             </Group>
         </Stack>
     )

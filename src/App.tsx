@@ -30,7 +30,7 @@ const App: React.FC = () => {
         <Register setActions={setActions} setUserCode={setUserCode} userName={userName} setUserName={setUserName}/>
       }
       { actions === 'game' &&
-          <Game setActions={setActions} userCode={userCode} userName={userName}/>
+        <Game setActions={setActions} userCode={userCode} userName={userName}/>
       }
       { actions === 'end' &&
         <End setActions={setActions} />

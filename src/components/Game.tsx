@@ -43,21 +43,22 @@ const Game = (props: Props) => {
     const countDownOrigin = useCountDown(3, 'origin');
     const countDownGame = useCountDown(22, 'game');
     const [opened, { close }] = useDisclosure(false);
+    const [participatedPoints, setParticipatedPoints] = useState<number>(0);
 
-    //Declaración del canvas para mostrar las líneas de conección
     useEffect(() => {
+        //Declaración del canvas para mostrar las líneas de conección
         const canvas = document.getElementById('canvasGame') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
         setCanvas(canvas);
         setCtx(ctx);
-    }, []);
-    
-    //Se declara los 3 segundos en los que el usuario puede ver los colores verdaderos antes de ocultarlos
-    useEffect(() => {
+        
+        //Se declara los 3 segundos en los que el usuario puede ver los colores verdaderos antes de ocultarlos
         setTimeout(() => {
             setShowColor(false);
             setActiveCountDown(true);
         },waitTime)
+
+        participation();
     }, []);
 
     //Muestra las lineas trazadas de los cables ya conectados
@@ -82,21 +83,35 @@ const Game = (props: Props) => {
         }
     },[countDownGame.seconds])
 
+    //Te guarda los puntos al terminar el juego
     useEffect(() => {
         if(gameOver){
             const save = async () => {
-                try {
-                    const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode, points: points + 10})
-                    if(saveUserParticipation) {
-                        setActions('game')
+                if(participatedPoints === 10) {
+                    try {
+                        const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode, points: points + 10})
+                        if(saveUserParticipation) {
+                            setActions('game')
+                        }
+                    } catch (err) {
+                        console.log('error  al guardar');
                     }
-                } catch (err) {
-                    console.log('error  al guardar');
                 }
             }
             save();
         } 
     }, [gameOver])
+
+    const participation = async () => {
+        try {
+            const getUserParticipation = await checkInServiceTs.getUserParticipation({userCode});
+            if(getUserParticipation?.points) {                
+                setParticipatedPoints(getUserParticipation?.points);
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     // Maneja la conexión de un conector de origen a destino
     const handleConnect = (originId: number, destinationId: number, x1: number, y1: number, x2: number, y2: number, color: string) => {
