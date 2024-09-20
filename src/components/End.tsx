@@ -23,6 +23,7 @@ const End = (props: Props) => {
             <ReactPlayer 
                 url={'../assets/Cierre.mp4'}
                 playing={true}
+                muted={true}
                 onEnded={handleVideoEnd}
                 height={'100%'}
                 width={'100%'}

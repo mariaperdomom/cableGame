@@ -17,6 +17,7 @@ const Welcome = (props: Props) => {
           <ReactPlayer 
             url={'../assets/Intro.mp4'}
             playing={true}
+            muted={true}
             loop={true}
             height={'100%'}
             width={'100%'}
