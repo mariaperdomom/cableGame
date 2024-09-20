@@ -1,5 +1,5 @@
-import { Button, Group, Paper, PinInput, Stack, Text, Title } from '@mantine/core'
-import { IconHandStop, IconInfoCircle } from '@tabler/icons-react'
+import { Button, Group, Paper, Stack, Text, TextInput, Title } from '@mantine/core'
+import { IconInfoCircle } from '@tabler/icons-react'
 import { useState } from 'react';
 import { checkInServiceTs } from './firebaseService';
 
@@ -58,36 +58,50 @@ const Register = (props: Props) => {
     }
 
     return (
-        <Stack gap={'xl'} justify='center' align='center' h={'100%'} mt={-80}>
-            <Title order={1} /* size={'xl'} */ ta={'center'} mb={'xl'} c={'white'} tt={'uppercase'}>Escribe tu <Text span inherit c={'#FAC224'}>código ID</Text></Title>
+        <Stack gap={'xl'} align='center' mt={-300} >
+            <Title 
+                order={1} 
+                size={'100'} 
+                ta={'center'} 
+                mb={'xl'} 
+                c={'white'} 
+                tt={'uppercase'}
+                style={{ fontFamily: 'Roboto, sans-serif' }}
+                w={'60%'}
+            >
+                Escribe tu {''}
+                <Text span inherit c={'#FAC224'}>código ID</Text>
+            </Title>
 
-            <PinInput
-                size={"xl"} 
-                length={6} 
+            <TextInput 
+                placeholder='m1e2a3'
+                size='120'
                 value={code}
-                onChange={(event) => setCode(event)}
-                error={errorCode && !isValidated}
+                onChange={(event) => setCode(event.currentTarget.value)}
+                required
+                minLength={6}
+                maxLength={6}
+                error={errorCode && !isValidated && 
+                    <Group gap={5} align='center' mt={-25}>
+                        <IconInfoCircle color='white'/>
+                        <Text c={'white'}>El código ingresado no está registrado en el evento</Text>
+                    </Group>
+                }
+                variant="filled"
+                w={'60%'}
             />
-            {errorCode && !isValidated &&
-                <Group gap={5} align='center' mt={-25}>
-                    <IconInfoCircle color='white'/>
-                    <Text c={'white'}>El código ingresado no está registrado en el evento</Text>
-                </Group>
-            }
             { userName &&
-                <Paper p={'xs'}>
+                <Paper p={'xs'} w={'60%'}>
                     <Group gap={5} align='center' >
-                        <IconHandStop />
-                        <Text fz={'lg'}>¡Bienvenido {userName}!</Text>
+                        <Text fz={'40'}>¡Bienvenid@ {userName}!</Text>
                     </Group>
                 </Paper>
             }
-            <Group justify='center'>
-                <Button size='xl' color='#FAC224' variant='subtle' onClick={()=> {setActions('')}}>Cancelar</Button>
+            <Group justify='center' mt={40} grow w={'60%'}>
                 { !isValidated ? 
-                    <Button size='xl' color='#FAC224' onClick={validateCode}>Válidar</Button>
+                    <Button size='80' h={120} style={{ fontFamily: 'Roboto, sans-serif' }} color='#FAC224' onClick={validateCode}>Válidar</Button>
                     :
-                    <Button size='xl' color='#FAC224' onClick={participation}>Siguiente</Button>
+                    <Button size='80' h={120} style={{ fontFamily: 'Roboto, sans-serif' }} color='#FAC224' onClick={participation}>Continuar</Button>
                 }
             </Group>
         </Stack>

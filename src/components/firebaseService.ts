@@ -75,7 +75,7 @@ export class CheckInServiceTs {
 		}
 	}
 
-	async saveUserParticipation({ userCode, points }: SaveParticipationOfUser) {
+	async saveUserParticipation({ userCode, points, newParticipation = false }: SaveParticipationOfUser) {
 		const attendee = await this.getAttendeeByUserCode({ userCode });
 		const now = new Date();
 
@@ -92,7 +92,12 @@ export class CheckInServiceTs {
 
 			const newPoints = points === undefined ? 0 : points;
 
-			await updateDoc(userExperienceRef, { points: newPoints, updateAt });
+			const newParticipationDateList: Timestamp[] = [...previousParticipation.participationDateList];
+			if (newParticipation) {
+				newParticipationDateList.push(checkInAt);
+			}
+
+			await updateDoc(userExperienceRef, { points: newPoints, updateAt, participationDateList: newParticipationDateList });
 
 			return docId;
 		} else {
@@ -102,6 +107,7 @@ export class CheckInServiceTs {
 			if (!attendee) return console.error('El código no esta registrado');
 
 			const newDoc: Omit<Participation, 'id'> = {
+				participationDateList: [checkInAt],
 				userCode,
 				checkInAt,
 				experienceId: this.experienceId,
@@ -164,15 +170,16 @@ export interface Properties {
 	names: string;
 }
 
-export type SaveParticipationOfUser = Pick<Participation, 'userCode' | 'points'>;
+export type SaveParticipationOfUser = Pick<Participation, 'userCode'> & { newParticipation?: boolean; points?: number };
 
 export type Participation = {
 	id: string;
 	experienceId: string;
 	experienceName: string;
 	userCode: string;
-	points?: number;
+	points: number;
 	checkInAt: Timestamp;
+	participationDateList: Timestamp[];
 	email: string;
 	names: string;
 	updateAt: Timestamp;
