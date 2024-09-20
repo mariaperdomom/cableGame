@@ -48,3 +48,11 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* @font-face {
+    font-family: 'Transducer';
+    src: url('/path-to-font/Transducer-Regular.woff2') format('woff2'),
+         url('/path-to-font/Transducer-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+} */

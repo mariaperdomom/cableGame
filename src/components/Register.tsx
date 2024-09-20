@@ -48,7 +48,7 @@ const Register = (props: Props) => {
     const nextStep = async () => {
         try {
             //los 10 puntos son de participación
-            const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: code, points: attendeesPoints})
+            const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: code, points: attendeesPoints, newParticipation: true})
             if(saveUserParticipation) {
                 setActions('game')
             }

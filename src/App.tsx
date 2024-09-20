@@ -23,7 +23,7 @@ const App: React.FC = () => {
         /* backgroundColor: '#FAC224', */
       }}
     >
-      { actions === 's' && 
+      { actions === '' && 
         <Welcome setActions={setActions} />
       }
       { actions === 'register' && 
@@ -43,7 +43,7 @@ const App: React.FC = () => {
           </Stack>
         </BackgroundImage>
       }
-      { actions === '' &&
+      { actions === 'game' &&
         <BackgroundImage src='../assets/JUEGO.png' style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
           <Stack justify='space-between' style={{ height: '100%' }}>
             <AspectRatio ratio={16 / 9} style={{ width: '100%' }} mt={-180}>
