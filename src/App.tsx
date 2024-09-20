@@ -23,7 +23,7 @@ const App: React.FC = () => {
         /* backgroundColor: '#FAC224', */
       }}
     >
-      { actions === '' && 
+      { actions === 's' && 
         <Welcome setActions={setActions} />
       }
       { actions === 'register' && 
@@ -43,16 +43,16 @@ const App: React.FC = () => {
           </Stack>
         </BackgroundImage>
       }
-      { actions === 'game' &&
+      { actions === '' &&
         <BackgroundImage src='../assets/JUEGO.png' style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
           <Stack justify='space-between' style={{ height: '100%' }}>
-            <AspectRatio ratio={16 / 9} style={{ width: '100%' }}>
+            <AspectRatio ratio={16 / 9} style={{ width: '100%' }} mt={-180}>
               <Stack justify='center' align='center'>
-                <Image src={'../assets/LogoHubbell.png'} h={'50%'} w={'40%'}/>
+                <Image src={'../assets/LogoHubbell.png'} h={'35%'} w={'25%'}/>
               </Stack>
             </AspectRatio>
             <ProductGame setActions={setActions} userCode={userCode} userName={userName}/>
-            <AspectRatio ratio={16 / 9} style={{ width: '100%' }}>
+            <AspectRatio ratio={16 / 9} style={{ width: '100%' }} mt={-240}>
               <Group justify='space-around' align='center' wrap='nowrap'>
                 <Image src={'../assets/Burndy/BurndyLogo.png'} h={'10vh'} w={'30vw'} fit='contain'/>
                 <Image src={'../assets/Raco/RacoLogo.png'} h={'10vh'} w={'10vw'} fit='contain'/>

@@ -274,21 +274,21 @@ const ProductGame = (props: Props) => {
     }
     
     return (
-        <Stack gap={'xl'} h={'100%'} justify='center' px={0}>
+        <Stack gap={'xl'} h={'100%'} justify='center' mt={-190}>
             <Group justify='center' align='center' gap={'xl'}>
-                <Button color='#FAC224' size='lg' style={{cursor: 'none', pointerEvents: 'none'}}>Tiempo: {activeCountDown ? countDownGame.seconds : '40' }</Button>
-                <Button color='#FAC224' size='lg' style={{cursor: 'none', pointerEvents: 'none'}}>Puntos: {points}</Button>
-                <Button color='#FAC224' size='lg' style={{cursor: 'none', pointerEvents: 'none'}}>Intentos fallidos: {errorAttempts} / {limitedErrorAttempts}</Button>
+                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Tiempo: {activeCountDown ? countDownGame.seconds : '40' }</Button>
+                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Puntos: {points}</Button>
+                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Intentos fallidos: {errorAttempts} / {limitedErrorAttempts}</Button>
             </Group>
             {showColor &&
                 <Group justify='center'>
                     <Avatar 
-                        radius="100" 
-                        size="xl" 
+                        radius="150" 
+                        size="300" 
                         src={null} 
                         className={classes.pulse}
-                        style={{position: 'absolute', top: '55vh'}}
-                    >{countDownOrigin.seconds}</Avatar>
+                        style={{position: 'absolute', top: '48vh'}}
+                    ><Text inherit c={'#FAC224'}>{countDownOrigin.seconds}</Text></Avatar>
                 </Group>
             }
             <Group justify='center' gap={0} wrap='nowrap'>
@@ -298,7 +298,7 @@ const ProductGame = (props: Props) => {
                             key={connector.id}
                             variant={originId !== connector.id ? 'filled' : 'light'} 
                             radius='lg' 
-                            size='xl' 
+                            size='175' 
                             color='#FAC224'
                             src={null} 
                             onClick={(e) => origin(e, connector.id)}
@@ -315,8 +315,8 @@ const ProductGame = (props: Props) => {
                 </Stack>
                 <canvas 
                     id="canvasGame"
-                    width={window.innerWidth * 0.4}
-                    height='700'
+                    width={window.innerWidth * 0.55}
+                    height='1350'
                     style={{/* backgroundColor: 'pink', */ zIndex: 10}}
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
@@ -328,7 +328,7 @@ const ProductGame = (props: Props) => {
                             variant={'filled'} 
                             className={originId ? classes.littlePulse : ''}
                             radius='lg' 
-                            size='xl'
+                            size='175'
                             color='#FAC224'
                             src={null} 
                             onClick={(e) => originId && destination(e, connector.id)}
@@ -345,21 +345,42 @@ const ProductGame = (props: Props) => {
                 </Stack>
             </Group>
 
-            {gameOver &&
+            {!gameOver &&
                 <Modal
-                    opened={gameOver}
+                    opened={true}
                     onClose={close}
                     centered
                     withCloseButton={false} 
                     closeOnClickOutside={false}
 			        closeOnEscape={false}
+                    size={'xl'}
+                    radius={'lg'}
+                    styles={{
+                        content: {
+                          backgroundColor: '#FAC224',
+                          position: 'relative',
+                        },
+                    }}
                 >
-                    <Stack gap={'xl'} justify='center'>
-                        <Text fz={'h1'} ta={'center'} fw={'bold'}>¡Finalizó el juego {userName}!</Text>
-                        <Text fz={'xl'} ta={'center'}>Puntaje: {points}</Text>
-                        <Text fz={'xl'} ta={'center'}>Intentos: {attempts}</Text>
-                        <Text fz={'xl'} ta={'center'}>Intentos fallidos: {errorAttempts}</Text>
-                        <Button onClick={() => {close(); setActions('end')}} color='dark' size='lg'>Confirmar</Button>
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundImage: `url("${logoHubbell}")`, // Ruta del logo
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        opacity: 0.2, // Ajusta la transparencia
+                        zIndex: -1,   // Para que quede detrás del contenido
+                    }} />
+                    <Stack gap={'xl'} justify='center' /* bg={'#FAC224'} */>
+                        <Text fz={'60'} ta={'center'} fw={'bold'} tt={'uppercase'}>¡Finalizó el juego {userName}!</Text>
+                        <Text fz={'45'} ta={'center'} fw={'bold'} tt={'uppercase'}>Puntaje: {points}</Text>
+                        <Text fz={'45'} ta={'center'} fw={'bold'} tt={'uppercase'}>Intentos: {attempts}</Text>
+                        <Text fz={'45'} ta={'center'} fw={'bold'} tt={'uppercase'}>Intentos fallidos: {errorAttempts}</Text>
+                        <Button onClick={() => {close(); setActions('end')}} color='dark' size='50' h={100}>Confirmar</Button>
                     </Stack>
                 </Modal>
             }
