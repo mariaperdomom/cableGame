@@ -1,4 +1,4 @@
-import { Box, Button, Group, Paper, PinInput, Stack, Text, Title } from '@mantine/core'
+import { Button, Group, Paper, PinInput, Stack, Text, Title } from '@mantine/core'
 import { IconHandStop, IconInfoCircle } from '@tabler/icons-react'
 import { useState } from 'react';
 import { checkInServiceTs } from './firebaseService';
@@ -15,6 +15,7 @@ const Register = (props: Props) => {
     const [ code, setCode ] = useState<string>('');
     const [ isValidated, setIsValidated ] = useState<boolean>(false);
     const [ errorCode, setErrorCode ] = useState<boolean>(false);
+    const attendeesPoints = 10;
     
     const validateCode = async () => {
         try {
@@ -47,7 +48,7 @@ const Register = (props: Props) => {
     const nextStep = async () => {
         try {
             //los 10 puntos son de participación
-            const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: code, points: 10})
+            const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: code, points: attendeesPoints})
             if(saveUserParticipation) {
                 setActions('game')
             }
@@ -57,39 +58,36 @@ const Register = (props: Props) => {
     }
 
     return (
-        <Stack gap={'xl'} justify='center' align='center' h={'100%'}>
-            <Title order={1} style={{cursor: 'pointer'}} ta={'center'} mb={'xl'}>Registro</Title>
+        <Stack gap={'xl'} justify='center' align='center' h={'100%'} mt={-80}>
+            <Title order={1} /* size={'xl'} */ ta={'center'} mb={'xl'} c={'white'} tt={'uppercase'}>Escribe tu <Text span inherit c={'#FAC224'}>código ID</Text></Title>
 
-            <Box w={'25%'}>
-                <Text fw={'bold'} ta={'start'} fz={'xl'} mb={10}>Código</Text>
-                <PinInput
-                    size="xl" 
-                    length={6} 
-                    value={code}
-                    onChange={(event) => setCode(event)}
-                    error={errorCode && !isValidated}
-                />
-            </Box>
+            <PinInput
+                size={"xl"} 
+                length={6} 
+                value={code}
+                onChange={(event) => setCode(event)}
+                error={errorCode && !isValidated}
+            />
             {errorCode && !isValidated &&
-                <Group gap={5} align='center' mt={-25} w={'25%'}>
-                    <IconInfoCircle color='red'/>
-                    <Text c={'red'}>El código ingresado no está registrado en el evento</Text>
+                <Group gap={5} align='center' mt={-25}>
+                    <IconInfoCircle color='white'/>
+                    <Text c={'white'}>El código ingresado no está registrado en el evento</Text>
                 </Group>
             }
             { userName &&
-                <Paper w={'25%'} p={'xs'}>
+                <Paper p={'xs'}>
                     <Group gap={5} align='center' >
                         <IconHandStop />
                         <Text fz={'lg'}>¡Bienvenido {userName}!</Text>
                     </Group>
                 </Paper>
             }
-            <Group justify='end' w={'25%'}>
-                <Button size='xl' color='dark' variant='subtle' onClick={()=> {setActions('')}}>Cancelar</Button>
+            <Group justify='center'>
+                <Button size='xl' color='#FAC224' variant='subtle' onClick={()=> {setActions('')}}>Cancelar</Button>
                 { !isValidated ? 
-                    <Button size='xl' color='dark' onClick={validateCode}>Válidar</Button>
+                    <Button size='xl' color='#FAC224' onClick={validateCode}>Válidar</Button>
                     :
-                    <Button size='xl' color='dark' onClick={participation}>Siguiente</Button>
+                    <Button size='xl' color='#FAC224' onClick={participation}>Siguiente</Button>
                 }
             </Group>
         </Stack>

@@ -16,7 +16,7 @@ interface Props {
     userName: string;
 }
 
-const Game = (props: Props) => {
+const CableGame = (props: Props) => {
     const { setActions, userCode, userName } = props;
     const initialConnectors = [
         { id: 1, color: 'red'},
@@ -42,7 +42,7 @@ const Game = (props: Props) => {
     const [activeCountDown, setActiveCountDown] = useState<boolean>(false);
     const countDownOrigin = useCountDown(3, 'origin');
     const countDownGame = useCountDown(22, 'game');
-    const [opened, { close }] = useDisclosure(false);
+    const [, { close }] = useDisclosure(false);
     const [participatedPoints, setParticipatedPoints] = useState<number>(0);
 
     useEffect(() => {
@@ -63,17 +63,7 @@ const Game = (props: Props) => {
 
     //Muestra las lineas trazadas de los cables ya conectados
     useEffect(() => {
-        if (ctx) {
-            ctx.clearRect(0, 0, canvas!.width, canvas!.height);
-            cables.forEach((cable) => {
-                ctx.beginPath();
-                ctx.moveTo(cable.x1, cable.y1);
-                ctx.lineTo(cable.x2, cable.y2);
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = cable.color;
-                ctx.stroke();
-            });
-        }
+        correctLine();
     }, [cables, ctx]);
 
     //Si no hizo nada y solo se quedo viendo llama a la funcion para abrir el modal
@@ -102,6 +92,20 @@ const Game = (props: Props) => {
         } 
     }, [gameOver])
 
+    const correctLine = () => {
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+            cables.forEach((cable) => {
+                ctx.beginPath();
+                ctx.moveTo(cable.x1, cable.y1);
+                ctx.lineTo(cable.x2, cable.y2);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = cable.color;
+                ctx.stroke();
+            });
+        }
+    }
+
     const participation = async () => {
         try {
             const getUserParticipation = await checkInServiceTs.getUserParticipation({userCode});
@@ -127,6 +131,7 @@ const Game = (props: Props) => {
             } else {
                 setErrorAttempts(errorAttempts + 1);
                 setOriginId(0);
+                correctLine();
             }
         } else {
             setGameOver(true);
@@ -145,6 +150,7 @@ const Game = (props: Props) => {
 
     //Muestra una linea de conección en el canvas mientras se mueve el mouse
     const handleMouseMove = (e: React.MouseEvent<Element, MouseEvent>) => {
+        correctLine();        
         if (canvas && ctx && initialPosition && isInitialPositionSet) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const rect = canvas.getBoundingClientRect();
@@ -230,6 +236,7 @@ const Game = (props: Props) => {
 
     const handleDragOverCanvas = (e: React.DragEvent<HTMLCanvasElement>) => {
         e.preventDefault();
+        correctLine();
         if (canvas && ctx && initialPosition && isInitialPositionSet) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const rect = canvas.getBoundingClientRect();
@@ -264,9 +271,9 @@ const Game = (props: Props) => {
         <Stack gap={'xl'} h={'100%'} justify='center' px={0}>
             <Title order={1} onClick={()=> setActions('end')} style={{cursor: 'pointer'}} ta={'center'}>Juego</Title>
             <Group justify='center' align='center' gap={'xl'}>
-                <Text size='xl'>Tiempo: {activeCountDown ? countDownGame.seconds : '20' }</Text>
-                <Text size='xl'>Puntos: {points}</Text>
-                <Text size='xl'>Intentos fallidos: {errorAttempts} / 4</Text>
+                <Text fz='xl'>Tiempo: {activeCountDown ? countDownGame.seconds : '20' }</Text>
+                <Text fz='xl'>Puntos: {points}</Text>
+                <Text fz='xl'>Intentos fallidos: {errorAttempts} / 4</Text>
             </Group>
             {showColor &&
                 <Group justify='center'>
@@ -346,17 +353,16 @@ const Game = (props: Props) => {
 			        closeOnEscape={false}
                 >
                     <Stack gap={'xl'} justify='center'>
-                        <Text size={'xl'} ta={'center'} fw={'bold'}>¡Finalizó el juego {userName}!</Text>
-                        <Text size={'xl'} ta={'center'}>Puntaje: {points}</Text>
-                        <Text size={'xl'} ta={'center'}>Intentos: {attempts}</Text>
-                        <Text size={'xl'} ta={'center'}>Intentos fallidos: {errorAttempts}</Text>
+                        <Text fz={'h1'} ta={'center'} fw={'bold'}>¡Finalizó el juego {userName}!</Text>
+                        <Text fz={'xl'} ta={'center'}>Puntaje: {points}</Text>
+                        <Text fz={'xl'} ta={'center'}>Intentos: {attempts}</Text>
+                        <Text fz={'xl'} ta={'center'}>Intentos fallidos: {errorAttempts}</Text>
                         <Button onClick={() => {close(); setActions('end')}} color='dark' size='lg'>Confirmar</Button>
                     </Stack>
-
                 </Modal>
             }
         </Stack>
     )
 }
 
-export default Game
+export default CableGame;

@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, Firestore, getDocs, query, updateDoc, where, CollectionReference, DocumentData } from 'firebase/firestore';
+import { addDoc, collection, doc, Firestore, getDocs, query, updateDoc, where, CollectionReference, DocumentData, Timestamp } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
@@ -75,32 +75,24 @@ export class CheckInServiceTs {
 		}
 	}
 
-	async getUsersParticipation() {
-		const querySnapshot = await getDocs(this.participationCollection); // Obtener todos los documentos
-
-		if (!querySnapshot.empty) {
-			// Mapeamos todos los documentos a un array de objetos Participation
-			const usersParticipation: Participation[] = querySnapshot.docs.map((doc) => ({
-				id: doc.id,
-				...(doc.data() as Omit<Participation, 'id'>),
-			}));
-
-			return usersParticipation;
-		} else {
-			return [];
-		}
-	}
-
-	async saveUserParticipation({ userCode, checkInAt = new Date().toUTCString(), points = 0 }: SaveParticipationOfUser) {
+	async saveUserParticipation({ userCode, points }: SaveParticipationOfUser) {
 		const attendee = await this.getAttendeeByUserCode({ userCode });
+		const now = new Date();
+
+		const checkInAt = Timestamp.fromDate(now);
+		const updateAt = Timestamp.fromDate(now);
 
 		if (attendee === null) throw Error('404');
 
 		const previousParticipation = await this.getUserParticipation({ userCode });
+
 		if (previousParticipation) {
 			const docId = previousParticipation.id;
 			const userExperienceRef = doc(this.firebaseDB, `event/${this.eventId}/usersActivityIntoExperiences`, docId);
-			await updateDoc(userExperienceRef, { points });
+
+			const newPoints = points === undefined ? 0 : points;
+
+			await updateDoc(userExperienceRef, { points: newPoints, updateAt });
 
 			return docId;
 		} else {
@@ -114,9 +106,10 @@ export class CheckInServiceTs {
 				checkInAt,
 				experienceId: this.experienceId,
 				experienceName: experience.name,
-				points,
+				points: points === undefined ? 0 : points,
 				email: attendee.properties.email,
 				names: attendee.properties.names,
+				updateAt,
 			};
 			const newDocRef = await addDoc(this.participationCollection, newDoc);
 			return newDocRef.id;
@@ -142,22 +135,6 @@ export class CheckInServiceTs {
 		return null;
 	}
 
-	async getAllAttendee() {
-		const snapshot = await getDocs(this.attendeesCollection);
-		const attendees: any[] = [];
-		snapshot.forEach((doc) => {
-			const attendee = {
-				id: doc.id,
-				...doc.data(),
-			};
-			attendees.push(attendee);
-		});
-		return attendees;
-	}
-
-	getAllExperience() {
-		return this.experiences;
-	}
 	getExperienceById({ experienceId }: { experienceId: string }) {
 		const experience = this.experiences.find((experience) => experience.id === experienceId) as Experience;
 		return experience;
@@ -187,7 +164,7 @@ export interface Properties {
 	names: string;
 }
 
-export type SaveParticipationOfUser = Omit<Participation, 'id' | 'experienceId' | 'experienceName' | 'email' | 'names' | 'checkInAt'> & { checkInAt?: string };
+export type SaveParticipationOfUser = Pick<Participation, 'userCode' | 'points'>;
 
 export type Participation = {
 	id: string;
@@ -195,9 +172,10 @@ export type Participation = {
 	experienceName: string;
 	userCode: string;
 	points?: number;
-	checkInAt: string;
+	checkInAt: Timestamp;
 	email: string;
 	names: string;
+	updateAt: Timestamp;
 };
 
 export interface Experience {
