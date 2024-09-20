@@ -74,11 +74,11 @@ const ProductGame = (props: Props) => {
     }, [cables, ctx]);
 
     //Si no hizo nada y solo se quedo viendo llama a la funcion para abrir el modal
-    /* useEffect(() => {
+    useEffect(() => {
         if(countDownGame.seconds === 0){
             setGameOver(true);
         }
-    },[countDownGame.seconds]) */
+    },[countDownGame.seconds])
 
     //Te guarda los puntos al terminar el juego
     useEffect(() => {
@@ -88,7 +88,16 @@ const ProductGame = (props: Props) => {
                     try {
                         const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode, points: points + attendeesPoints})
                         if(saveUserParticipation) {
-                            setActions('game')
+                            setGameOver(true);
+                        }
+                    } catch (err) {
+                        console.log('error  al guardar');
+                    }
+                } else {
+                    try {
+                        const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode})
+                        if(saveUserParticipation) {
+                            setGameOver(true);
                         }
                     } catch (err) {
                         console.log('error  al guardar');
@@ -212,66 +221,6 @@ const ProductGame = (props: Props) => {
             }
         }
     }
-
-    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, originId: number) => {
-        const x = e.nativeEvent.clientX;
-        const y = e.nativeEvent.clientY;
-        if(canvas && ctx) {
-            const rect = canvas!.getBoundingClientRect();
-            const canvasX = x - rect.left;
-            const canvasY = y - rect.top;
-            positionRef.current = { ...positionRef.current, x1: canvasX, y1: canvasY, x2: canvasX, y2: canvasY };
-            handleCanvasDrag(e);
-            setOriginId(originId);
-        }
-    }
-    
-    const handleCanvasDrag = (e: React.DragEvent<Element>) => {
-        if (canvas && ctx) {
-            setIsInitialPositionSet(!isInitialPositionSet);
-            const rect = canvas.getBoundingClientRect();
-            const x = e.nativeEvent.clientX - rect.left;
-            const y = e.nativeEvent.clientY - rect.top;
-            setInitialPosition({ x, y });
-        }
-    }
-
-    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-    }
-
-    const handleDragOverCanvas = (e: React.DragEvent<HTMLCanvasElement>) => {
-        e.preventDefault();
-        correctLine();
-        if (canvas && ctx && initialPosition && isInitialPositionSet) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const rect = canvas.getBoundingClientRect();
-            const x = e.nativeEvent.clientX - rect.left;
-            const y = e.nativeEvent.clientY - rect.top;
-            ctx.beginPath();
-            ctx.moveTo(initialPosition.x, initialPosition.y);
-            ctx.lineTo(x, y);
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = '#000000';
-            ctx.stroke();
-        }
-    }
-
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>, destinationId: number) => {        
-        const x = e.nativeEvent.clientX;
-        const y = e.nativeEvent.clientY;
-        if(canvas && ctx) {
-            const rect = canvas!.getBoundingClientRect();
-            const canvasX = x - rect.left;
-            const canvasY = y - rect.top;
-            const lastPosition = positionRef.current;
-            if (lastPosition) {
-                positionRef.current = { ...positionRef.current, x1: lastPosition.x1, y1: lastPosition.y1, x2: canvasX, y2: canvasY };
-                handleCanvasDrag(e);
-                handleConnect(originId, destinationId, lastPosition.x1, lastPosition.y1, canvasX, canvasY);
-            }
-        }
-    }
     
     return (
         <Stack gap={'xl'} h={'100%'} justify='center' mt={-190}>
@@ -306,8 +255,6 @@ const ProductGame = (props: Props) => {
                                 cursor: isConnected(connector.id) ? 'not-allowed' : 'pointer',
                                 pointerEvents: isConnected(connector.id) && 'none',
                             }}
-                            draggable={!isConnected(connector.id)}
-                            onDragStart={(e) => handleDragStart(e, connector.id)}
                         >
                             <Image src={showColor ? connector.urlProduct : ( !isConnected(connector.id) ? originId === connector.id ? connector.urlProduct : logoHubbell : connector.urlProduct)} />
                         </Avatar>
@@ -320,7 +267,6 @@ const ProductGame = (props: Props) => {
                     style={{/* backgroundColor: 'pink', */ zIndex: 10}}
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
-                    onDragOver={handleDragOverCanvas}
                 />
                 <Stack gap={'xl'}>
                     {destinationConnectors.map((connector) => (
@@ -336,8 +282,6 @@ const ProductGame = (props: Props) => {
                                 cursor: (isConnected(connector.id) || !isInitialPositionSet) ? 'not-allowed' : 'pointer',
                                 pointerEvents: isConnected(connector.id) && 'none'
                             }}
-                            onDragOver={(e) => originId && handleDragOver(e)}
-                            onDrop={(e) => originId && handleDrop(e, connector.id)}
                         >
                             <Image src={showColor ? connector.urlProduct  : ( !isConnected(connector.id) ? logoHubbell : connector.urlProduct)} />
                         </Avatar>
@@ -345,9 +289,9 @@ const ProductGame = (props: Props) => {
                 </Stack>
             </Group>
 
-            {!gameOver &&
+            {gameOver &&
                 <Modal
-                    opened={true}
+                    opened={gameOver}
                     onClose={close}
                     centered
                     withCloseButton={false} 
@@ -368,14 +312,14 @@ const ProductGame = (props: Props) => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundImage: `url("${logoHubbell}")`, // Ruta del logo
+                        backgroundImage: `url("${logoHubbell}")`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
-                        opacity: 0.2, // Ajusta la transparencia
-                        zIndex: -1,   // Para que quede detrás del contenido
+                        opacity: 0.2, 
+                        zIndex: -1,
                     }} />
-                    <Stack gap={'xl'} justify='center' /* bg={'#FAC224'} */>
+                    <Stack gap={'xl'} justify='center'>
                         <Text fz={'60'} ta={'center'} fw={'bold'} tt={'uppercase'}>¡Finalizó el juego {userName}!</Text>
                         <Text fz={'45'} ta={'center'} fw={'bold'} tt={'uppercase'}>Puntaje: {points}</Text>
                         <Text fz={'45'} ta={'center'} fw={'bold'} tt={'uppercase'}>Intentos: {attempts}</Text>
