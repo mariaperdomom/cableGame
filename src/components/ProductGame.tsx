@@ -229,7 +229,7 @@ const ProductGame = (props: Props) => {
             <Group justify='center' align='center' gap={'xl'}>
                 <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Tiempo: {activeCountDown ? countDownGame.seconds : '40' }</Button>
                 <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Puntos: {points}</Button>
-                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Fallidos: {errorAttempts} / {limitedErrorAttempts}</Button>
+                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Errores: {errorAttempts} / {limitedErrorAttempts}</Button>
             </Group>
             {showColor &&
                 <Group justify='center'>
