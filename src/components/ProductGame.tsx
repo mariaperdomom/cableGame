@@ -21,8 +21,8 @@ const ProductGame = (props: Props) => {
     const { setActions, userCode, userName } = props;
     const initialConnectors = [
         { id: 1, urlProduct: '../assets/Burndy/Burndy1.png', urlLogo: '../assets/Burndy/BurndyLogo.png'},
-        { id: 2, urlProduct: '../assets/Burndy/Burndy1.png', urlLogo: '../assets/Burndy/BurndyLogo.png'},
-        { id: 3, urlProduct: '../assets/Burndy/Burndy1.png', urlLogo: '../assets/Burndy/BurndyLogo.png'},
+        { id: 2, urlProduct: '../assets/Burndy/Burndy2.png', urlLogo: '../assets/Burndy/BurndyLogo.png'},
+        { id: 3, urlProduct: '../assets/Burndy/Burndy3.png', urlLogo: '../assets/Burndy/BurndyLogo.png'},
         { id: 4, urlProduct: '../assets/Raco/Raco1.png', urlLogo: '../assets/Raco/RacoLogo.png'},
         { id: 5, urlProduct: '../assets/Raco/Raco2.png', urlLogo: '../assets/Raco/RacoLogo.png'},
         { id: 6, urlProduct: '../assets/Raco/Raco3.png', urlLogo: '../assets/Raco/RacoLogo.png'},
@@ -89,6 +89,7 @@ const ProductGame = (props: Props) => {
                         const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode, points: points + attendeesPoints})
                         if(saveUserParticipation) {
                             setGameOver(true);
+                            /* console.log('llego aqui') */
                         }
                     } catch (err) {
                         console.log('error  al guardar');
@@ -98,6 +99,7 @@ const ProductGame = (props: Props) => {
                         const saveUserParticipation = await checkInServiceTs.saveUserParticipation({userCode: userCode})
                         if(saveUserParticipation) {
                             setGameOver(true);
+                            /* console.log('llego aqui 2') */
                         }
                     } catch (err) {
                         console.log('error  al guardar');
@@ -146,9 +148,9 @@ const ProductGame = (props: Props) => {
                 }
             } else {
                 setErrorAttempts(errorAttempts + 1);
-                setOriginId(0);
                 correctLine();
             }
+            setOriginId(0);
         } else {
             setGameOver(true);
         }
@@ -227,7 +229,7 @@ const ProductGame = (props: Props) => {
             <Group justify='center' align='center' gap={'xl'}>
                 <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Tiempo: {activeCountDown ? countDownGame.seconds : '40' }</Button>
                 <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Puntos: {points}</Button>
-                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Intentos fallidos: {errorAttempts} / {limitedErrorAttempts}</Button>
+                <Button color='#FAC224' size='40' h={70} style={{cursor: 'none', pointerEvents: 'none'}}>Fallidos: {errorAttempts} / {limitedErrorAttempts}</Button>
             </Group>
             {showColor &&
                 <Group justify='center'>
@@ -263,7 +265,7 @@ const ProductGame = (props: Props) => {
                 <canvas 
                     id="canvasGame"
                     width={window.innerWidth * 0.55}
-                    height='1350'
+                    height='1400'
                     style={{/* backgroundColor: 'pink', */ zIndex: 10}}
                     onClick={handleCanvasClick}
                     onMouseMove={handleMouseMove}
@@ -271,6 +273,7 @@ const ProductGame = (props: Props) => {
                 <Stack gap={'xl'}>
                     {destinationConnectors.map((connector) => (
                         <Avatar 
+                            key={connector.id}
                             variant={'filled'} 
                             className={originId ? classes.littlePulse : ''}
                             radius='lg' 
