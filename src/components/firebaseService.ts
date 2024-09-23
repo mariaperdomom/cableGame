@@ -3,14 +3,14 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-	apiKey: 'AIzaSyAohyXq3R4t3ao7KFzLDY7W6--g6kOuS7Q',
-	authDomain: 'eviusauthdev.firebaseapp.com',
-	databaseURL: 'https://eviusauthdev-default-rtdb.firebaseio.com',
-	projectId: 'eviusauthdev',
-	storageBucket: 'eviusauthdev.appspot.com',
-	messagingSenderId: '86708016609',
-	appId: '1:86708016609:web:129d087ffa3077a1ef2ea0',
-};
+	apiKey: "AIzaSyDDnc9WHXf4CWwXCVggeiarYGu_xBgibJY",
+	authDomain: "eviusauth.firebaseapp.com",
+	databaseURL: "https://eviusauth.firebaseio.com",
+	projectId: "eviusauth",
+	storageBucket: "eviusauth.appspot.com",
+	messagingSenderId: "400499146867",
+	appId: "1:400499146867:web:5d0021573a43a1df"
+  };
 
 // Initialize Firebase
 export const FirebaseApp = initializeApp(firebaseConfig);
@@ -19,26 +19,26 @@ export const FirebaseDB = getFirestore(FirebaseApp);
 //*----------------------------------- Entidad del servicio -----------------------------------------
 
 export class CheckInServiceTs {
-	eventId: string = '66e4928e446844dcb6079aa2'; //Todo: Aquí coloca el id del evento
-	experienceId: string = 'i0own9qlUQ'; //toDo: Aquí coloca el id de la experiencia asignada
+	eventId: string = '66d9babfff8148182c053214'; //Todo: Aquí coloca el id del evento
+	experienceId: string = 'KbCLd9hZ3r'; //toDo: Aquí coloca el id de la experiencia asignada
 	participationCollection: CollectionReference<DocumentData, DocumentData>;
 	attendeesCollection: CollectionReference<DocumentData, DocumentData>;
-	experiences: Experience[] = [
+	experiences = [
 		{
 			id: 'i0own9qlUQ',
-			name: 'EXPERIENCIA HUBBELL - HOLOGRAMA INTERACTIVO',
+			name: 'EXPERIENCIA HUBBELL - HOLOGRAMA INTERACTIVO', //Carlos Guerra
 		},
 		{
 			id: 'KbCLd9hZ3r',
-			name: 'EXPERIENCIA WIRING - JUEGO DE DESTREZA EN TÓTEM',
+			name: 'EXPERIENCIA BURNDY - RACO - WIEGMANN - JUEGO DE DESTREZA EN TÓTEM', //Alejandra
 		},
 		{
 			id: 'cyhH5yUGs5',
-			name: 'CHANCE LINEMAN TOOLS - MEMORY MATCH',
+			name: 'CHANCE LINEMAN TOOLS - MEMORY MATCH', //Carlos Guerra
 		},
 		{
 			id: 'HI0qLLtutT',
-			name: 'EXPERIENCIA KILLARK - TRIVIA EN TÓTEM',
+			name: 'EXPERIENCIA KILLARK - TRIVIA EN TÓTEM', //Fabian Salcedo
 		},
 		{
 			id: 'Fjkyw8lfUy',
@@ -50,9 +50,10 @@ export class CheckInServiceTs {
 		},
 		{
 			id: '45VD1hir8z',
-			name: 'EXPERIENCIA RACO - JUEGO DE DESTREZA EN TÓTEM',
+			name: 'EXPERIENCIA RACO - JUEGO DE DESTREZA EN TÓTEM', //Fabian Salcedo
 		},
 	];
+
 
 	constructor(private readonly firebaseDB: Firestore) {
 		this.participationCollection = collection(this.firebaseDB, `event/${this.eventId}/usersActivityIntoExperiences`);
