@@ -20,7 +20,7 @@ const App: React.FC = () => {
         padding: 0,
         position: 'relative',
         overflow: 'hidden',
-        /* backgroundColor: '#FAC224', */
+        backgroundColor: '#FAC224',
       }}
     >
       { actions === '' && 
