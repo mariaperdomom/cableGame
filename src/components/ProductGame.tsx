@@ -45,7 +45,7 @@ const ProductGame = (props: Props) => {
     const waitTime : number = 5000;
     const [activeCountDown, setActiveCountDown] = useState<boolean>(false);
     const countDownOrigin = useCountDown(5, 'origin');
-    const countDownGame = useCountDown(42, 'game');
+    const countDownGame = useCountDown(32, 'game');
     const [, { close }] = useDisclosure(false);
     const [participatedPoints, setParticipatedPoints] = useState<number>(0);
     const limitedErrorAttempts = 9;
