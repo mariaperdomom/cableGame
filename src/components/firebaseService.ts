@@ -3,14 +3,14 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-	apiKey: "AIzaSyDDnc9WHXf4CWwXCVggeiarYGu_xBgibJY",
-	authDomain: "eviusauth.firebaseapp.com",
-	databaseURL: "https://eviusauth.firebaseio.com",
-	projectId: "eviusauth",
-	storageBucket: "eviusauth.appspot.com",
-	messagingSenderId: "400499146867",
-	appId: "1:400499146867:web:5d0021573a43a1df"
-  };
+	apiKey: 'AIzaSyDDnc9WHXf4CWwXCVggeiarYGu_xBgibJY',
+	authDomain: 'eviusauth.firebaseapp.com',
+	databaseURL: 'https://eviusauth.firebaseio.com',
+	projectId: 'eviusauth',
+	storageBucket: 'eviusauth.appspot.com',
+	messagingSenderId: '400499146867',
+	appId: '1:400499146867:web:5d0021573a43a1df',
+};
 
 // Initialize Firebase
 export const FirebaseApp = initializeApp(firebaseConfig);
@@ -23,7 +23,7 @@ export class CheckInServiceTs {
 	experienceId: string = 'KbCLd9hZ3r'; //toDo: Aquí coloca el id de la experiencia asignada
 	participationCollection: CollectionReference<DocumentData, DocumentData>;
 	attendeesCollection: CollectionReference<DocumentData, DocumentData>;
-	experiences = [
+	experiences: Experience[] = [
 		{
 			id: 'i0own9qlUQ',
 			name: 'EXPERIENCIA HUBBELL - HOLOGRAMA INTERACTIVO', //Carlos Guerra
@@ -53,7 +53,6 @@ export class CheckInServiceTs {
 			name: 'EXPERIENCIA RACO - JUEGO DE DESTREZA EN TÓTEM', //Fabian Salcedo
 		},
 	];
-
 
 	constructor(private readonly firebaseDB: Firestore) {
 		this.participationCollection = collection(this.firebaseDB, `event/${this.eventId}/usersActivityIntoExperiences`);
@@ -91,7 +90,7 @@ export class CheckInServiceTs {
 			const docId = previousParticipation.id;
 			const userExperienceRef = doc(this.firebaseDB, `event/${this.eventId}/usersActivityIntoExperiences`, docId);
 
-			const newPoints = points === undefined ? 0 : points;
+			const newPoints = points === undefined ? previousParticipation.points : points;
 
 			const newParticipationDateList: Timestamp[] = [...previousParticipation.participationDateList];
 			if (newParticipation) {

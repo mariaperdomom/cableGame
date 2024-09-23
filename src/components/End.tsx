@@ -3,15 +3,17 @@ import ReactPlayer from 'react-player';
 
 interface Props {
     setActions: (action: string) => void; 
+    setUserName: (name: string) => void; 
 }
 
 const End = (props: Props) => {
-    const { setActions } = props;
+    const { setActions, setUserName } = props;
 
      // Función que se llama cuando el video termina
     const handleVideoEnd = () => {
         setTimeout(() => {
         setActions('');
+        setUserName('');
         }, 500); 
     };
 

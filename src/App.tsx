@@ -63,7 +63,7 @@ const App: React.FC = () => {
         </BackgroundImage>
       }
       { actions === 'end' &&
-        <End setActions={setActions} />
+        <End setActions={setActions} setUserName={setUserName}/>
       }
     </Container>
   );

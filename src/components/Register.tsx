@@ -82,9 +82,9 @@ const Register = (props: Props) => {
                 minLength={6}
                 maxLength={6}
                 error={errorCode && !isValidated && 
-                    <Group gap={5} align='center' mt={-25}>
-                        <IconInfoCircle color='white'/>
-                        <Text c={'white'}>El código ingresado no está registrado en el evento</Text>
+                    <Group gap={20} align='center' /* mt={-25} */ wrap='nowrap'>
+                        <IconInfoCircle color='white' size={'5.5rem'}/>
+                        <Text c={'white'} size={'2.5rem'}>El código ingresado no está registrado en el evento</Text>
                     </Group>
                 }
                 variant="filled"
