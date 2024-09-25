@@ -93,6 +93,10 @@ const Register = (props: Props) => {
                 required
                 minLength={6}
                 maxLength={6}
+                onFocus={() => {
+                    inputRef.current?.focus(); // Asegúrate de enfocar el input
+                    inputRef.current?.select(); // Selecciona el texto si es necesario
+                }}
                 error={errorCode && !isValidated &&
                     <Group gap={20} align='center'>
                         <IconInfoCircle color='white' size={'5.5rem'} />
